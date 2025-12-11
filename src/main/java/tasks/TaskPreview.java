@@ -3,9 +3,9 @@ package tasks;
 import users.User;
 
 import java.util.Date;
-import java.util.List;
 
 public class TaskPreview {
+    private long id;
     private String title;
     private long project;
     private Status status;
