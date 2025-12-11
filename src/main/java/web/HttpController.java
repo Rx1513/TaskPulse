@@ -1,39 +1,56 @@
 package web;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+@Controller
 public class HttpController {
     @GetMapping("/auth/register")
-    public String register() {
-        return "Welcome to the registration page!";
+    public ModelAndView register() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("dummy");
+        mv.getModel().put("data", "Welcome to registration page!");
+
+        return mv;
     }
 
     @GetMapping("/auth/login")
-    public String login() {
-        return "Welcome to the login page!";
+    public ModelAndView login() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("dummy");
+        mv.getModel().put("data", "Welcome to login page!");
+
+        return mv;
     }
 
-    @GetMapping(path = {"/index", "/"})
-    public String indexPreview() {
-        return "Welcome to the main page!";
+    // Main page
+    @GetMapping(path = {"/tasks", "/index", "/"})
+    public ModelAndView index() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("dummy");
+        mv.getModel().put("data", "Welcome to main page!");
+
+        return mv;
     }
 
     @GetMapping("/task/show/{id}")
-    public String task() {
-        return "Welcome to the task view!";
+    public ModelAndView task() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("dummy");
+        mv.getModel().put("data", "Welcome to task view page!");
+
+        return mv;
     }
 
     @GetMapping("/task/new")
-    public String showTaskCreationPage() {
-        return "Welcome to the task creation page!";
-    }
+    public ModelAndView showTaskCreationPage() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("dummy");
+        mv.getModel().put("data", "Welcome to task creation page!");
 
-    @PostMapping("/task/new")
-    public String createTask() {
-        return "Task created!";
+        return mv;
     }
 }
 
