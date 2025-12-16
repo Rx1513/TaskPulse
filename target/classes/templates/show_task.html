@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Task</title>
+</head>
+<body>
+<h2>Задача</h2>
+<p>Тема: <span th:text="${task.title}"></span></p>
+<p>Проект: <span th:text="${task.project}"></span></p>
+<p>Статус: <span th:text="${task.status}"></span></p>
+<p>Срок: <span th:text="${task.dueDate}"></span></p>
+
+<form th:action="@{/task/delete/{id}(id=${task.id})}" method="post">
+    <button type="submit">Удалить задачу</button>
+</form>
+
+<a href="/tasks">Назад к списку задач</a>
+</body>
+</html>
