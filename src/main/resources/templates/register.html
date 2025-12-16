@@ -1,23 +1,107 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Register</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* Общие стили */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button, .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        button:hover, .btn:hover {
+            background-color: #218838;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Регистрация</h2>
+<div class="register-container">
+    <h2>Регистрация</h2>
 
-<form method="post" th:action="@{/auth/register}">
-    <input type="hidden"
-           th:name="${_csrf.parameterName}"
-           th:value="${_csrf.token}" />
+    <form method="post" th:action="@{/auth/register}">
+        <!--input type="hidden"
+               th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}" /-->
 
-    <input name="email" placeholder="Email"><br><br>
-    <input name="username" placeholder="Логин"><br><br>
-    <input name="password" type="password" placeholder="Пароль"><br><br>
+        <div class="form-group">
+            <input name="email" placeholder="Email" required>
+        </div>
 
-    <button type="submit">Зарегистрироваться</button>
-</form>
+        <div class="form-group">
+            <input name="username" placeholder="Логин" required>
+        </div>
+
+        <div class="form-group">
+            <input name="password" type="password" placeholder="Пароль" required>
+        </div>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <div class="links">
+        <a href="/auth/login" >Уже есть аккаунт? Войти</a>
+    </div>
+</div>
 
 </body>
 </html>
