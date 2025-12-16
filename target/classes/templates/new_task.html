@@ -2,11 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>New Task</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <h2>Создать новую задачу</h2>
 <form method="post" th:action="@{/task/new}">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
 
     <input type="text" name="title" placeholder="Тема"><br><br>
     <input type="text" name="project" placeholder="Проект"><br><br>
@@ -15,6 +16,7 @@
     <button type="submit">Создать</button>
 </form>
 
-<a href="/tasks">Назад к списку задач</a>
+<a href="/tasks" class="btn">Назад к списку задач</a>
+
 </body>
 </html>

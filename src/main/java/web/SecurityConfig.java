@@ -1,4 +1,4 @@
-package web;
+/*package web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,4 +42,4 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user);
     }
 
-}
+}*/
