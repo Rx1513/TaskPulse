@@ -25,6 +25,7 @@ public interface TaskRepository {
     public void changeTitle(Task task, String title);
     public void changeProject(Task task, String project);
     public void addComment(Task task, String comment);
+    public void addComment(Task task, User commentator, String comment);
     public List<TaskPreview> getTasksPreviewsByUser(User user);
     public List<Comment> getCommentsForTask(Task task);
 }
