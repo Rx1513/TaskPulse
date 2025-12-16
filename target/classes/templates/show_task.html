@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Task</title>
+    <meta charset="UTF-8">
+    <title>Задача</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<h2>Задача</h2>
-<p>Тема: <span th:text="${task.title}"></span></p>
-<p>Проект: <span th:text="${task.project}"></span></p>
-<p>Статус: <span th:text="${task.status}"></span></p>
-<p>Срок: <span th:text="${task.dueDate}"></span></p>
 
-<form th:action="@{/task/delete/{id}(id=${task.id})}" method="post">
-    <button type="submit">Удалить задачу</button>
-</form>
+<div class="container">
+    <div class="card">
+        <h2 th:text="${task.title}"></h2>
 
-<a href="/tasks">Назад к списку задач</a>
+        <p><strong>Проект:</strong> <span th:text="${task.project}"></span></p>
+        <p><strong>Исполнитель:</strong> <span th:text="${task.assignee}"></span></p>
+        <p><strong>Дата начала:</strong> <span th:text="${task.startDate}"></span></p>
+        <p><strong>Дата окончания:</strong> <span th:text="${task.endDate}"></span></p>
+
+        <hr>
+
+        <p th:text="${task.description}"></p>
+
+        <form th:action="@{/task/delete/{id}(id=${task.id})}" method="post">
+            <button class="btn danger">Удалить задачу</button>
+        </form>
+    </div>
+
+    <a href="/tasks" class="btn link">← К списку задач</a>
+</div>
+
 </body>
 </html>
