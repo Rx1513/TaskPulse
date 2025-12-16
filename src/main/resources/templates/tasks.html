@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tasks</title>
+</head>
+<body>
+
+<h2>Список задач</h2>
+
+<table border="1">
+    <tr>
+        <th>Тема</th>
+        <th>Проект</th>
+        <th>Статус</th>
+        <th>Срок</th>
+    </tr>
+    <tr th:each="task : ${tasks}">
+        <td>
+            <a th:href="@{/task/show/{id}(id=${task.id})}"
+               th:text="${task.title}"></a>
+        </td>
+        <td th:text="${task.project}"></td>
+        <td th:text="${task.status}"></td>
+        <td th:text="${task.dueDate}"></td>
+    </tr>
+</table>
+
+<a href="/task/new">Создать задачу</a>
+
+</body>
+</html>
