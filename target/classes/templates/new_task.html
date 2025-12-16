@@ -1,22 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>New Task</title>
+    <meta charset="UTF-8">
+    <title>Новая задача</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<h2>Создать новую задачу</h2>
-<form method="post" th:action="@{/task/new}">
-    <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
 
-    <input type="text" name="title" placeholder="Тема"><br><br>
-    <input type="text" name="project" placeholder="Проект"><br><br>
-    <input type="text" name="status" placeholder="Статус"><br><br>
-    <input type="date" name="dueDate"><br><br>
-    <button type="submit">Создать</button>
-</form>
+<div class="container">
+    <h2>Создание задачи</h2>
 
-<a href="/tasks" class="btn">Назад к списку задач</a>
+    <form method="post" th:action="@{/task/new}" class="card">
+
+        <label>Проект *</label>
+        <input type="text" name="project" required>
+
+        <label>Тема *</label>
+        <input type="text" name="title" required>
+
+        <label>Описание *</label>
+        <textarea name="description" rows="5" required></textarea>
+
+        <label>Исполнитель *</label>
+        <select name="assignee" required>
+            <option value="">Выберите исполнителя</option>
+            <option>Иван</option>
+            <option>Анна</option>
+            <option>Даниил</option>
+        </select>
+
+        <div class="row">
+            <div>
+                <label>Дата начала *</label>
+                <input type="date" name="startDate" required>
+            </div>
+            <div>
+                <label>Дата окончания *</label>
+                <input type="date" name="endDate" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn primary">Создать задачу</button>
+    </form>
+
+    <a href="/tasks" class="btn link">← Назад</a>
+</div>
 
 </body>
 </html>
