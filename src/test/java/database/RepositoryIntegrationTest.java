@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -29,9 +28,10 @@ import tasks.TaskPreview;
 import users.User;
 import web.HttpServer;
 
-@SpringBootTest(classes = web.HttpServer.class)
+@SpringBootTest(
+        classes = HttpServer.class,
+        properties = {"spring.test.database.replace=NONE"})
 @Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestInstance(Lifecycle.PER_CLASS)
 class RepositoryIntegrationTest {
 
