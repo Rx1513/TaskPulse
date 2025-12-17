@@ -27,7 +27,6 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
                 .sessionManagement(session -> session
