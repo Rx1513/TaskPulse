@@ -7,7 +7,7 @@ body {
 
 .container {
     max-width: 900px;
-    margin: 40px auto;
+    margin: 10px auto;
     padding: 0 20px;
 }
 
@@ -116,4 +116,18 @@ input, textarea, select {
     font-size: 0.9em;
     color: #555;
 }
+
+.header-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 20px;
+}
+
+header .btn {
+    margin-top: 0;
+}
+
+
 
