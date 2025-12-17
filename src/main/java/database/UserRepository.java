@@ -9,8 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository {
-    public Optional<User> findUserById(long id);
-    public void addUser(User user, String password) throws RuntimeException;
-    public void verifyUser(User user, String password) throws AuthenticationException;
-    public boolean checkUserExistence(User user);
+    Optional<User> findUserById(long id);
+    Optional<User> findUserByEmail(String email);
+    void addUser(User user, String password);
+    void verifyUser(User user, String password) throws AuthenticationException;
+    boolean checkUserExistence(User user);
 }
