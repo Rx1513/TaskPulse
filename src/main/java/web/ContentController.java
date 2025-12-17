@@ -74,17 +74,57 @@ public class ContentController {
         return new RedirectView("/tasks");
     }
 
+    // Отобразить форму редактирования
+    @GetMapping("/task/edit/{id}")
+    public ModelAndView editTaskForm(@PathVariable int id) {
+        return tasks.stream()
+                .filter(task -> task.getId() == id)
+                .findFirst()
+                .map(task -> {
+                    ModelAndView mv = new ModelAndView("edit_task");
+                    mv.addObject("task", task);
+                    return mv;
+                })
+                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
+    }
+
+    // Обработать форму редактирования
+    @PostMapping("/task/edit/{id}")
+    public RedirectView editTask(
+            @PathVariable int id,
+            @RequestParam String project,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam String assignee,
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        tasks.stream()
+                .filter(task -> task.getId() == id)
+                .findFirst()
+                .ifPresent(task -> {
+                    task.setProject(project);
+                    task.setTitle(title);
+                    task.setDescription(description);
+                    task.setAssignee(assignee);
+                    task.setStartDate(startDate);
+                    task.setEndDate(endDate);
+                });
+        return new RedirectView("/task/show/" + id);
+    }
+
+
     public static class Task {
 
         private static int counter = 1;
 
         private final int id;
-        private final String project;
-        private final String title;
-        private final String description;
-        private final String assignee;
-        private final String startDate;
-        private final String endDate;
+        private String project;
+        private String title;
+        private String description;
+        private String assignee;
+        private String startDate;
+        private String endDate;
 
         public Task(String project,
                     String title,
@@ -108,5 +148,13 @@ public class ContentController {
         public String getAssignee() { return assignee; }
         public String getStartDate() { return startDate; }
         public String getEndDate() { return endDate; }
+
+        // Добавляем сеттеры для редактирования
+        public void setProject(String project) { this.project = project; }
+        public void setTitle(String title) { this.title = title; }
+        public void setDescription(String description) { this.description = description; }
+        public void setAssignee(String assignee) { this.assignee = assignee; }
+        public void setStartDate(String startDate) { this.startDate = startDate; }
+        public void setEndDate(String endDate) { this.endDate = endDate; }
     }
 }

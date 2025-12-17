@@ -11,14 +11,36 @@
     <div class="card">
         <h2 th:text="${task.title}"></h2>
 
-        <p><strong>Проект:</strong> <span th:text="${task.project}"></span></p>
-        <p><strong>Исполнитель:</strong> <span th:text="${task.assignee}"></span></p>
-        <p><strong>Дата начала:</strong> <span th:text="${task.startDate}"></span></p>
-        <p><strong>Дата окончания:</strong> <span th:text="${task.endDate}"></span></p>
+        <form th:action="@{/task/edit/{id}(id=${task.id})}" method="post">
+            <p>
+                <strong>Название:</strong>
+                <input type="text" name="title" th:value="${task.title}">
+            </p>
+            <p>
+                <strong>Проект:</strong>
+                <input type="text" name="project" th:value="${task.project}">
+            </p>
+            <p>
+                <strong>Исполнитель:</strong>
+                <input type="text" name="assignee" th:value="${task.assignee}">
+            </p>
+            <p>
+                <strong>Дата начала:</strong>
+                <input type="date" name="startDate" th:value="${task.startDate}">
+            </p>
+            <p>
+                <strong>Дата окончания:</strong>
+                <input type="date" name="endDate" th:value="${task.endDate}">
+            </p>
+            <p>
+                <strong>Описание:</strong><br>
+                <textarea name="description" rows="5" th:text="${task.description}"></textarea>
+            </p>
+
+            <button class="btn save">Сохранить изменения</button>
+        </form>
 
         <hr>
-
-        <p th:text="${task.description}"></p>
 
         <form th:action="@{/task/delete/{id}(id=${task.id})}" method="post">
             <button class="btn danger">Удалить задачу</button>
