@@ -43,9 +43,11 @@ public abstract class TaskPreview {
     private Status status;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "start_date")
     private Date start;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "end_date")
     private Date end;
 
     @ManyToOne(fetch = FetchType.LAZY)

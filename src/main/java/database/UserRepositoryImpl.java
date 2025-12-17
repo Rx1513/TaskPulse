@@ -30,6 +30,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void addUser(User user, String password) {
+        if (checkUserExistence(user)) {
+            throw new org.springframework.dao.DataIntegrityViolationException(
+                    "User already exists with id or email");
+        }
         user.setPasswordHash(passwordEncoder.encode(password));
         userJpaRepository.save(user);
     }
