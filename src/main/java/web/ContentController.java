@@ -131,6 +131,13 @@ public class ContentController {
         return new RedirectView("/task/show/" + id);
     }
 
+    @PostMapping("/task/delete/{id}")
+    public RedirectView deleteTask(@PathVariable int id) {
+        tasks.removeIf(task -> task.getId() == id);
+        return new RedirectView("/tasks");
+    }
+
+
 
 
     public static class Task {
