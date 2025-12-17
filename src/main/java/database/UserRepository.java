@@ -13,5 +13,5 @@ public interface UserRepository {
     Optional<User> findUserByEmail(String email);
     void addUser(User user, String password);
     void verifyUser(User user, String password) throws AuthenticationException;
-    boolean checkUserExistence(User user);
+    UserExistenceResult checkUserExistence(User user);
 }
