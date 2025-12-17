@@ -29,6 +29,10 @@ public final class UserValidator {
             throw new IllegalArgumentException("Имя пользователя не может быть пустым!");
         }
 
+        if (name.length() < 2) {
+            throw new IllegalArgumentException("Имя пользователя должно состоять хотя бы из двух символов!");
+        }
+
         if (!NAME_REGEX.matcher(name).matches()) {
             throw new IllegalArgumentException("Имя пользователя может содержать только латинские буквы, числа, подчёркивания и дефисы!");
         }
