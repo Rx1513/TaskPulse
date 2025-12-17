@@ -18,6 +18,10 @@
 <div class="container">
     <div class="card">
         <h2 th:text="${task.title}"></h2>
+        <p>
+            <strong>Создатель:</strong>
+            <span th:text="${task.creator}">Имя пользователя</span>
+        </p>
 
         <form th:action="@{/task/edit/{id}(id=${task.id})}" method="post">
             <p>

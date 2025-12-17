@@ -84,7 +84,7 @@ public class ContentController {
             @RequestParam String endDate,
             @RequestParam(defaultValue = "Новая") String status
     ) {
-        Task task = new Task(project, title, description, assignee, startDate, endDate);
+        Task task = new Task(project, title, description, assignee, startDate, endDate, currentUser);
         task.setStatus(status);
         tasks.add(task);
         return new RedirectView("/tasks");
@@ -138,8 +138,6 @@ public class ContentController {
     }
 
 
-
-
     public static class Task {
 
         private static int counter = 1;
@@ -153,12 +151,9 @@ public class ContentController {
         private String endDate;
         private String status;
 
-        public Task(String project,
-                    String title,
-                    String description,
-                    String assignee,
-                    String startDate,
-                    String endDate) {
+        private final String creator;
+        public Task(String project, String title, String description, String assignee,
+                    String startDate, String endDate, String creator) {
             this.id = counter++;
             this.project = project;
             this.title = title;
@@ -167,7 +162,10 @@ public class ContentController {
             this.startDate = startDate;
             this.endDate = endDate;
             this.status = "Новая";
+            this.creator = creator;
         }
+
+
 
         public int getId() { return id; }
         public String getProject() { return project; }
@@ -177,6 +175,7 @@ public class ContentController {
         public String getStartDate() { return startDate; }
         public String getEndDate() { return endDate; }
         public String getStatus() { return status; }
+        public String getCreator() { return creator; }
 
         // Добавляем сеттеры для редактирования
         public void setProject(String project) { this.project = project; }
