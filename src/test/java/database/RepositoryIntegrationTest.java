@@ -96,6 +96,33 @@ class RepositoryIntegrationTest {
     }
 
     @Test
+    void searchUsersReturnsMatchesAndHonorsLimit() {
+        User alice = User.builder().name("Alice").email("alice@example.com").build();
+        userRepository.addUser(alice, "p1");
+
+        User albert = User.builder().name("Albert").email("albert@example.com").build();
+        userRepository.addUser(albert, "p2");
+
+        User bob = User.builder().name("Bob").email("builder@tools.com").build();
+        userRepository.addUser(bob, "p3");
+
+        assertThat(userRepository.searchUsers("al", 10))
+                .extracting(User::getEmail)
+                .containsExactlyInAnyOrder("alice@example.com", "albert@example.com");
+
+        assertThat(userRepository.searchUsers("builder", 1)).hasSize(1);
+    }
+
+    @Test
+    void searchUsersReturnsEmptyOnBlankOrNoMatch() {
+        User alice = User.builder().name("Alice").email("alice@example.com").build();
+        userRepository.addUser(alice, "p1");
+
+        assertThat(userRepository.searchUsers("   ", 5)).isEmpty();
+        assertThat(userRepository.searchUsers("nomatch", 5)).isEmpty();
+    }
+
+    @Test
     void taskLifecycleCoversUpdatesAndRelations() {
         User creator = User.builder().name("Creator").email("creator@task.com").build();
         userRepository.addUser(creator, "cpass");
@@ -141,7 +168,7 @@ class RepositoryIntegrationTest {
         assertThat(afterSubscription.getSubscriptionList()).extracting(User::getId).contains(performer.getId());
 
         taskRepository.addComment(afterSubscription, performer, "Nice work");
-        taskRepository.addComment(afterSubscription, "Auto message");
+        taskRepository.addComment(afterSubscription, creator, "Auto message");
         List<Comment> comments = taskRepository.getCommentsForTask(afterSubscription);
         assertThat(comments).hasSize(2);
 

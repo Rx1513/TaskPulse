@@ -2,10 +2,13 @@ package database;
 
 import database.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import javax.naming.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -61,5 +64,15 @@ public class UserRepositoryImpl implements UserRepository {
             throw new EmptyResultDataAccessException("User id or email is required", 1);
         }
         return userJpaRepository.existsByEmail(user.getEmail());
+    }
+
+    @Override
+    public List<User> searchUsers(String query, int limit) {
+        if (query == null || query.isBlank()) {
+            return Collections.emptyList();
+        }
+        int pageSize = limit > 0 ? limit : 10;
+        return userJpaRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                query, query, PageRequest.of(0, pageSize));
     }
 }
