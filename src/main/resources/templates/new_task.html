@@ -15,6 +15,14 @@
     </style>
 </head>
 <body>
+<header>
+    <div class="header-container">
+        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
+        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+    </div>
+</header>
+<hr>
+
 
 <div class="container">
     <h2>Создание задачи</h2>

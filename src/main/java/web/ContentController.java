@@ -12,10 +12,17 @@ import java.util.List;
 public class ContentController {
 
     private final List<Task> tasks = new ArrayList<>();
+    private String currentUser = null; // хранение текущего пользователя
 
     @GetMapping("/auth/register")
     public ModelAndView register() {
         return new ModelAndView("register");
+    }
+
+    @PostMapping("/auth/register")
+    public RedirectView doRegister(@RequestParam String username) {
+        currentUser = username; // "регистрируем" пользователя
+        return new RedirectView("/tasks");
     }
 
     @GetMapping("/auth/login")
@@ -23,38 +30,27 @@ public class ContentController {
         return new ModelAndView("login");
     }
 
+    @PostMapping("/auth/login")
+    public RedirectView doLogin(@RequestParam String username) {
+        currentUser = username; // логиним пользователя
+        return new RedirectView("/tasks");
+    }
+
+    @GetMapping("/auth/logout")
+    public RedirectView logout() {
+        currentUser = null;
+        return new RedirectView("/auth/login");
+    }
+
     @GetMapping("/tasks")
     public ModelAndView tasks() {
         ModelAndView mv = new ModelAndView("tasks");
         mv.addObject("tasks", tasks);
+        mv.addObject("currentUser", currentUser);
         return mv;
     }
 
-    @GetMapping("/task/new")
-    public ModelAndView newTask() {
-        return new ModelAndView("new_task");
-    }
-
-    @PostMapping("/task/new")
-    public RedirectView createTask(
-            @RequestParam String project,
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String assignee,
-            @RequestParam String startDate,
-            @RequestParam String endDate
-    ) {
-        tasks.add(new Task(
-                project,
-                title,
-                description,
-                assignee,
-                startDate,
-                endDate
-        ));
-        return new RedirectView("/tasks");
-    }
-
+    // Аналогично передаем currentUser на страницы task/show, task/new, task/edit
     @GetMapping("/task/show/{id}")
     public ModelAndView showTask(@PathVariable int id) {
         return tasks.stream()
@@ -63,18 +59,19 @@ public class ContentController {
                 .map(task -> {
                     ModelAndView mv = new ModelAndView("show_task");
                     mv.addObject("task", task);
+                    mv.addObject("currentUser", currentUser);
                     return mv;
                 })
                 .orElseGet(() -> new ModelAndView("redirect:/tasks"));
     }
 
-    @PostMapping("/task/delete/{id}")
-    public RedirectView deleteTask(@PathVariable int id) {
-        tasks.removeIf(task -> task.getId() == id);
-        return new RedirectView("/tasks");
+    @GetMapping("/task/new")
+    public ModelAndView newTask() {
+        ModelAndView mv = new ModelAndView("new_task");
+        mv.addObject("currentUser", currentUser);
+        return mv;
     }
 
-    // Отобразить форму редактирования
     @GetMapping("/task/edit/{id}")
     public ModelAndView editTaskForm(@PathVariable int id) {
         return tasks.stream()
@@ -83,6 +80,7 @@ public class ContentController {
                 .map(task -> {
                     ModelAndView mv = new ModelAndView("edit_task");
                     mv.addObject("task", task);
+                    mv.addObject("currentUser", currentUser);
                     return mv;
                 })
                 .orElseGet(() -> new ModelAndView("redirect:/tasks"));

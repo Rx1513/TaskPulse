@@ -6,6 +6,14 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<header>
+    <div class="header-container">
+        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
+        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+    </div>
+</header>
+<hr>
+
 
 <div class="container">
     <div class="header">
