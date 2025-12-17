@@ -9,8 +9,8 @@ public final class UserValidator {
     private static final Pattern EMAIL_REGEX =
             Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
-    // Letters, digits, spaces, underscore, dash, dot; length 2-100
-    private static final Pattern NAME_REGEX = Pattern.compile("^[\\p{L}0-9 ._-]{2,100}$");
+    // Letters, digits, spaces, underscore, dash; length 2-100 (no dots)
+    private static final Pattern NAME_REGEX = Pattern.compile("^[\\p{L}0-9 _-]{2,100}$");
 
     private UserValidator() {}
 
