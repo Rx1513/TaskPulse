@@ -41,9 +41,9 @@ public class TaskRepositoryImpl implements TaskRepository {
 
     @Override
     public void addTask(Task task) {
-        task.setCreator(requireUser(task.getCreator()));
+        requireUser(task.getCreator());
         if (task.getPerformer() != null) {
-            task.setPerformer(requireUser(task.getPerformer()));
+            requireUser(task.getPerformer());
         }
         if (task.getStatus() == null) {
             task.setStatus(Status.NEW);
@@ -81,9 +81,9 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void changeCreator(Task task, User performer) {
+    public void changeCreator(Task task, User creator) {
         Task persistedTask = requireTask(task);
-        persistedTask.setCreator(requireUser(performer));
+        persistedTask.setCreator(requireUser(creator));
         taskJpaRepository.save(persistedTask);
     }
 
@@ -113,12 +113,6 @@ public class TaskRepositoryImpl implements TaskRepository {
         Task persistedTask = requireTask(task);
         persistedTask.setProject(project);
         taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
-    public void addComment(Task task, String comment) {
-        Task persistedTask = requireTask(task);
-        addComment(persistedTask, persistedTask.getCreator(), comment);
     }
 
     @Override
