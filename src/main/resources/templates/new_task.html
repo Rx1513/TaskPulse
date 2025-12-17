@@ -4,13 +4,22 @@
     <meta charset="UTF-8">
     <title>Новая задача</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .row {
+            display: flex;
+            gap: 20px; /* сдвигаем поля по горизонтали */
+        }
+        .row > div {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Создание задачи</h2>
 
-    <form method="post" th:action="@{/task/new}" class="card">
+    <form method="post" th:action="@{/task/new}" class="card" id="taskForm">
 
         <label>Проект *</label>
         <input type="text" name="project" required>
@@ -32,11 +41,11 @@
         <div class="row">
             <div>
                 <label>Дата начала *</label>
-                <input type="date" name="startDate" required>
+                <input type="date" name="startDate" id="startDate" required>
             </div>
             <div>
                 <label>Дата окончания *</label>
-                <input type="date" name="endDate" required>
+                <input type="date" name="endDate" id="endDate" required>
             </div>
         </div>
 
@@ -45,6 +54,27 @@
 
     <a href="/tasks" class="btn link">← Назад</a>
 </div>
+
+<script>
+    const form = document.getElementById('taskForm');
+    const startInput = document.getElementById('startDate');
+    const endInput = document.getElementById('endDate');
+
+    form.addEventListener('submit', function (e) {
+        const startDate = new Date(startInput.value);
+        const endDate = new Date(endInput.value);
+
+        if (endDate < startDate) {
+            e.preventDefault();
+            alert('Дата окончания не может быть раньше даты начала!');
+        }
+    });
+
+    // Ограничение выбора дат прямо в поле
+    startInput.addEventListener('change', () => {
+        endInput.min = startInput.value;
+    });
+</script>
 
 </body>
 </html>
