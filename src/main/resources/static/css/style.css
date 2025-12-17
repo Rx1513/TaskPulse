@@ -81,3 +81,39 @@ input, textarea, select {
     margin-bottom: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,.05);
 }
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: white;
+}
+
+.status-new {
+    background-color: #3498db; /* синяя — Новая */
+}
+
+.status-inprogress {
+    background-color: #f39c12; /* оранжевая — В работе */
+}
+
+.status-done {
+    background-color: #2ecc71; /* зелёная — Завершено */
+}
+
+.task-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    color: #555;
+}
+

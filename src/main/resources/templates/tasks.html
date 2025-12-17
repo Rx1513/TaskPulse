@@ -23,9 +23,16 @@
 
     <div class="list">
         <div class="task-card" th:each="task : ${tasks}">
-            <h3 th:text="${task.title}"></h3>
-            <p th:text="${task.project}"></p>
-            <p>Исполнитель: <span th:text="${task.assignee}"></span></p>
+            <div class="task-header">
+                <h3 th:text="${task.title}">Задача</h3>
+                <span class="status"
+                      th:classappend="${task.status == 'Новая' ? ' status-new' : task.status == 'В работе' ? ' status-inprogress' : ' status-done'}"
+                      th:text="${task.status}">Статус</span>
+            </div>
+            <div class="task-info">
+                <span th:text="${task.project}">Проект</span>
+                <span th:text="${task.assignee}">Исполнитель</span>
+            </div>
             <a th:href="@{/task/show/{id}(id=${task.id})}" class="btn small">Открыть</a>
         </div>
     </div>

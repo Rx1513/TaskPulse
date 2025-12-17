@@ -25,7 +25,14 @@
         <p>Исполнитель: <input type="text" name="assignee" th:value="${task.assignee}"/></p>
         <p>Дата начала: <input type="text" name="startDate" th:value="${task.startDate}"/></p>
         <p>Дата окончания: <input type="text" name="endDate" th:value="${task.endDate}"/></p>
-
+        <p>
+            Статус:
+            <select name="status" required>
+                <option th:value="'Новая'" th:selected="${task.status == 'Новая'}">Новая</option>
+                <option th:value="'В работе'" th:selected="${task.status == 'В работе'}">В работе</option>
+                <option th:value="'Завершено'" th:selected="${task.status == 'Завершено'}">Завершено</option>
+            </select>
+        </p>
         <button type="submit">Сохранить</button>
         <a th:href="@{/task/show/{id}(id=${task.id})}">Отмена</a>
     </form>
