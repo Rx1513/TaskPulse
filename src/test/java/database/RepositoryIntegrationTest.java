@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -33,11 +34,16 @@ import web.HttpServer;
         properties = {"spring.test.database.replace=NONE"})
 @Testcontainers
 @TestInstance(Lifecycle.PER_CLASS)
+@Transactional
 class RepositoryIntegrationTest {
 
     @Container
     private static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>("postgres:16-alpine").withDatabaseName("taskpulse");
+
+    static {
+        POSTGRES.start();
+    }
 
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
