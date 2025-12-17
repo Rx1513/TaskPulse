@@ -13,6 +13,8 @@ class UserValidatorTest {
                 .doesNotThrowAnyException();
         assertThatCode(() -> UserValidator.validateName("John Doe"))
                 .doesNotThrowAnyException();
+        assertThatCode(() -> UserValidator.validateName("John_Doe-123"))
+                .doesNotThrowAnyException();
     }
 
     @Test
