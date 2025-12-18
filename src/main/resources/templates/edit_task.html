@@ -38,9 +38,11 @@
             <div class="form-group">
                 <label>Статус</label>
                 <select name="status">
-                    <option th:selected="${task.status=='Новая'}">Новая</option>
-                    <option th:selected="${task.status=='В работе'}">В работе</option>
-                    <option th:selected="${task.status=='Завершено'}">Завершено</option>
+                    <option th:each="status : ${statuses}"
+                            th:value="${status}"
+                            th:text="${status.displayName}"
+                            th:selected="${task.status == status}">
+                    </option>
                 </select>
             </div>
         </div>

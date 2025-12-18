@@ -83,7 +83,7 @@ public class TaskController {
                                      LocalDate startDate,
                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                      LocalDate endDate,
-                                 @RequestParam String status, Principal principal) {
+                                 @RequestParam Status status, Principal principal) {
         Optional<User> creator = userRepository.findUserByName(principal.getName());
         if (creator.isEmpty()) {
             throw new EmptyResultDataAccessException("Создатель задачи не найден! " + principal.getName(), 1);
@@ -102,7 +102,7 @@ public class TaskController {
                 assigneeUser.get(),
                 startDate,
                 endDate,
-                Status.NEW);
+                status);
 
         return new RedirectView("/task/show/" + id);
     }
