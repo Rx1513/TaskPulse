@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование задачи</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
+        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+    </div>
+</header>
+<hr>
+
+<div class="container">
+    <h2>Редактирование задачи</h2>
+
+    <div class="card">
+        <form th:action="@{/task/edit/{id}(id=${task.id})}" method="post">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" name="title" th:value="${task.title}">
+                </div>
+                <div class="form-group">
+                    <label>Проект</label>
+                    <input type="text" name="project" th:value="${task.project}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Исполнитель</label>
+                    <input type="text" name="assignee" th:value="${task.assignee}">
+                </div>
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select name="status">
+                        <option th:selected="${task.status=='Новая'}">Новая</option>
+                        <option th:selected="${task.status=='В работе'}">В работе</option>
+                        <option th:selected="${task.status=='Завершено'}">Завершено</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Дата начала</label>
+                    <input type="date" name="startDate" th:value="${task.startDate}">
+                </div>
+                <div class="form-group">
+                    <label>Дата окончания</label>
+                    <input type="date" name="endDate" th:value="${task.endDate}">
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Описание</label>
+                <textarea name="description" rows="4" th:text="${task.description}"></textarea>
+            </div>
+
+            <button class="btn save">Сохранить</button>
+        </form>
+    </div>
+
+    <a th:href="@{/task/show/{id}(id=${task.id})}" class="btn link">← Назад к просмотру</a>
+</div>
+
+</body>
+</html>

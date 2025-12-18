@@ -104,6 +104,20 @@ public class ContentController {
         return new RedirectView("/task/show/" + id);
     }
 
+    @GetMapping("/task/edit/{id}")
+    public ModelAndView editTaskForm(@PathVariable int id) {
+        return tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .map(task -> {
+                    ModelAndView mv = new ModelAndView("edit_task");
+                    mv.addObject("task", task);
+                    mv.addObject("currentUser", currentUser);
+                    return mv;
+                })
+                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
+    }
+
     @PostMapping("/task/delete/{id}")
     public RedirectView deleteTask(@PathVariable int id) {
         tasks.removeIf(t -> t.getId() == id);

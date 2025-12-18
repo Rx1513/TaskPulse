@@ -20,67 +20,21 @@
 
         <h2 th:text="${task.title}"></h2>
 
-        <p>
-            <strong>Создатель:</strong>
-            <span th:text="${task.creator}">Имя</span>
-        </p>
-
-        <form th:action="@{/task/edit/{id}(id=${task.id})}" method="post" class="card">
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Название</label>
-                    <input type="text" name="title" th:value="${task.title}">
-                </div>
-                <div class="form-group">
-                    <label>Проект</label>
-                    <input type="text" name="project" th:value="${task.project}">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Исполнитель</label>
-                    <input type="text" name="assignee" th:value="${task.assignee}">
-                </div>
-                <div class="form-group">
-                    <label>Статус</label>
-                    <select name="status">
-                        <option th:selected="${task.status=='Новая'}">Новая</option>
-                        <option th:selected="${task.status=='В работе'}">В работе</option>
-                        <option th:selected="${task.status=='Завершено'}">Завершено</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Дата начала</label>
-                    <input type="date" name="startDate" th:value="${task.startDate}">
-                </div>
-                <div class="form-group">
-                    <label>Дата окончания</label>
-                    <input type="date" name="endDate" th:value="${task.endDate}">
-                </div>
-            </div>
-
-            <div class="form-group full-width">
-                <label>Описание</label>
-                <textarea name="description" rows="4" th:text="${task.description}"></textarea>
-            </div>
-
-            <button class="btn save">Сохранить</button>
-        </form>
+        <p><strong>Создатель:</strong> <span th:text="${task.creator}">Имя</span></p>
+        <p><strong>Проект:</strong> <span th:text="${task.project}"></span></p>
+        <p><strong>Исполнитель:</strong> <span th:text="${task.assignee}"></span></p>
+        <p><strong>Дата начала:</strong> <span th:text="${task.startDate}"></span></p>
+        <p><strong>Дата окончания:</strong> <span th:text="${task.endDate}"></span></p>
+        <p><strong>Статус:</strong> <span th:text="${task.status}"></span></p>
+        <p><strong>Описание:</strong><br><span th:text="${task.description}"></span></p>
 
         <hr>
 
         <!-- ===== КОММЕНТАРИИ ===== -->
         <h3>Комментарии</h3>
-
         <div th:if="${#lists.isEmpty(task.comments)}">
             <p>Комментариев пока нет</p>
         </div>
-
         <div th:each="comment : ${task.comments}" class="task-card">
             <p>
                 <strong th:text="${comment.author}">Автор</strong>:
@@ -89,15 +43,15 @@
         </div>
 
         <form th:action="@{/task/{id}/comment(id=${task.id})}" method="post">
-            <textarea name="text" rows="3" required
-                      placeholder="Написать комментарий..."></textarea>
+            <textarea name="text" rows="3" required placeholder="Написать комментарий..."></textarea>
             <br>
             <button class="btn primary">Отправить</button>
         </form>
 
         <hr>
 
-        <form th:action="@{/task/delete/{id}(id=${task.id})}" method="post">
+        <a th:href="@{/task/edit/{id}(id=${task.id})}" class="btn primary">Редактировать</a>
+        <form th:action="@{/task/delete/{id}(id=${task.id})}" method="post" style="display:inline">
             <button class="btn danger">Удалить задачу</button>
         </form>
 
