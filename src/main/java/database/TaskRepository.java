@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface TaskRepository {
     public Optional<Task> findTaskById(long id);
     public void addTask(Task task);
+    public void deleteTask(Task task);
     public void addUserToSubscriptionList(Task task,User subscriber);
     public void changeTask(Task old_task,Task new_task);
     public void changeDescription(Task task, String description);

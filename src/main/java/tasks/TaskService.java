@@ -8,10 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import users.User;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +44,11 @@ public class TaskService {
         users.add(assignee);
         task.setSubscriptionList(users);
         taskRepository.addTask(task);
+    }
+
+    public void deleteTaskById(long id) {
+        Optional<Task> task = taskRepository.findTaskById(id);
+        task.ifPresent(taskRepository::deleteTask);
     }
 }
 
