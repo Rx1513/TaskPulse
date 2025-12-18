@@ -10,9 +10,9 @@ import users.User;
 @Repository
 public interface UserJpaRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
-
+    Optional<User> findByName(String username);
     boolean existsByEmail(String email);
-
+    boolean existsByName(String name);
     List<User> findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
             String nameQuery, String emailQuery, Pageable pageable);
 }

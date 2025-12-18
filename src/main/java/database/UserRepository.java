@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository {
     Optional<User> findUserById(long id);
     Optional<User> findUserByEmail(String email);
-    void addUser(User user, String password);
+    Optional<User> findUserByName(String username);
+    void addUser(User user);
     void verifyUser(User user, String password) throws AuthenticationException;
-    boolean checkUserExistence(User user);
+    UserExistenceResult checkUserExistence(User user);
     List<User> searchUsers(String query, int limit);
 }
