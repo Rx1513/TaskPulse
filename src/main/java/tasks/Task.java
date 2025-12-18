@@ -14,10 +14,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import users.User;
 
 @Entity
@@ -25,7 +24,9 @@ import users.User;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true, exclude = {"creator", "subscriptionList", "comments"})
+@SuperBuilder
+@AllArgsConstructor
+@ToString(callSuper = true, exclude = {"creator", "assignee", "subscriptionList", "comments"})
 public class Task extends TaskPreview {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
