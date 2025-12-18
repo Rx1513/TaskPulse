@@ -3,6 +3,7 @@ package database;
 import users.User;
 
 import javax.naming.AuthenticationException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,5 @@ public interface UserRepository {
     void addUser(User user);
     void verifyUser(User user, String password) throws AuthenticationException;
     UserExistenceResult checkUserExistence(User user);
+    List<User> searchUsers(String query, int limit);
 }
