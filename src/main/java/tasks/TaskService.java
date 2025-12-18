@@ -9,6 +9,9 @@ import users.User;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +41,11 @@ public class TaskService {
                 .start(startDate)
                 .end(endDate)
                 .status(status)
+                .subscriptionList(new HashSet<>())
                 .build();
-
+        Set users = task.getSubscriptionList();
+        users.add(assignee);
+        task.setSubscriptionList(users);
         taskRepository.addTask(task);
     }
 }
