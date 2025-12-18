@@ -2,17 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Новая задача</title>
+    <title>Создание задачи</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        .row {
-            display: flex;
-            gap: 20px; /* сдвигаем поля по горизонтали */
-        }
-        .row > div {
-            flex: 1;
-        }
-    </style>
 </head>
 <body>
 <header>
@@ -23,7 +14,6 @@
 </header>
 <hr>
 
-
 <div class="container">
     <h2>Создание задачи</h2>
 
@@ -31,19 +21,13 @@
 
         <div class="form-row">
             <div class="form-group">
+                <label>Название *</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="form-group">
                 <label>Проект *</label>
                 <input type="text" name="project" required>
             </div>
-
-            <div class="form-group">
-                <label>Тема *</label>
-                <input type="text" name="title" required>
-            </div>
-        </div>
-
-        <div class="form-group full-width">
-            <label>Описание *</label>
-            <textarea name="description" rows="5" required></textarea>
         </div>
 
         <div class="form-group full-width">
@@ -67,8 +51,12 @@
             </div>
         </div>
 
+        <div class="form-group full-width">
+            <label>Описание *</label>
+            <textarea name="description" rows="5" required></textarea>
+        </div>
+
         <button type="submit" class="btn primary">Создать задачу</button>
-        <input type="hidden" name="status" value="Новая">
     </form>
 
 
@@ -83,20 +71,14 @@
     form.addEventListener('submit', function (e) {
         const startDate = new Date(startInput.value);
         const endDate = new Date(endInput.value);
-
         if (endDate < startDate) {
             e.preventDefault();
             alert('Дата окончания не может быть раньше даты начала!');
         }
     });
 
-    // Ограничение выбора дат прямо в поле
-    startInput.addEventListener('change', () => {
-        endInput.min = startInput.value;
-    });
-    endInput.addEventListener('change', () => {
-        startInput.max = endInput.value;
-    });
+    startInput.addEventListener('change', () => endInput.min = startInput.value);
+    endInput.addEventListener('change', () => startInput.max = endInput.value);
 </script>
 
 </body>
