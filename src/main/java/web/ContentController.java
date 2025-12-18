@@ -18,8 +18,7 @@ public class ContentController {
     @GetMapping("/auth/login")
     public ModelAndView login() {
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to login page!");
+        mv.setViewName("auth");
 
         return mv;
     }
