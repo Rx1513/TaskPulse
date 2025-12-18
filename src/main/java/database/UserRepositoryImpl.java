@@ -4,8 +4,6 @@ import database.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import javax.naming.AuthenticationException;
-import javax.naming.Name;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
