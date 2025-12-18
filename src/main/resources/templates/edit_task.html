@@ -33,7 +33,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Исполнитель</label>
-                <input type="text" name="assignee" th:value="${task.assignee}">
+                <input type="text" name="assignee" th:value="${task.assignee.name}">
             </div>
             <div class="form-group">
                 <label>Статус</label>
@@ -48,11 +48,11 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Дата начала</label>
-                <input type="date" name="startDate" th:value="${task.startDate}">
+                <input type="date" name="startDate" th:value="${task.start}">
             </div>
             <div class="form-group">
                 <label>Дата окончания</label>
-                <input type="date" name="endDate" th:value="${task.endDate}">
+                <input type="date" name="endDate" th:value="${task.end}">
             </div>
         </div>
 
