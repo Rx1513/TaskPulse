@@ -4,6 +4,8 @@ import database.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import javax.naming.AuthenticationException;
+import javax.naming.Name;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,6 +29,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findUserByEmail(String email) {
         return userJpaRepository.findByEmail(email);
     }
+
+    @Override
+    public Optional<User> findUserByName(String name) { return userJpaRepository.findByName(name); }
 
     @Override
     public void addUser(User user) {
