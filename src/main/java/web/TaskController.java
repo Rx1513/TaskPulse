@@ -71,4 +71,39 @@ public class TaskController {
         taskService.deleteTaskById(id);
         return new RedirectView("/tasks");
     }
+
+    @PostMapping("/task/edit/{id}")
+    public RedirectView editTask(@PathVariable int id,
+                                 @RequestParam String project,
+                                 @RequestParam String title,
+                                 @RequestParam String description,
+                                 @RequestParam String assignee,
+                                 @RequestParam
+                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                     LocalDate startDate,
+                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                     LocalDate endDate,
+                                 @RequestParam String status, Principal principal) {
+        Optional<User> creator = userRepository.findUserByName(principal.getName());
+        if (creator.isEmpty()) {
+            throw new EmptyResultDataAccessException("Создатель задачи не найден! " + principal.getName(), 1);
+        }
+
+        Optional<User> assigneeUser = userRepository.findUserByName(assignee);
+        if (assigneeUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("Исполнитель задачи не найден! " + assignee, 1);
+        }
+
+        taskService.changeTaskById(
+                id,
+                project,
+                title,
+                description,
+                assigneeUser.get(),
+                startDate,
+                endDate,
+                Status.NEW);
+
+        return new RedirectView("/task/show/" + id);
+    }
 }
