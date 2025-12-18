@@ -5,6 +5,7 @@ import database.jpa.TaskJpaRepository;
 import database.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -88,14 +89,14 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void changeStartDate(Task task, java.util.Date start) {
+    public void changeStartDate(Task task, OffsetDateTime start) {
         Task persistedTask = requireTask(task);
         persistedTask.setStart(start);
         taskJpaRepository.save(persistedTask);
     }
 
     @Override
-    public void changeEndDate(Task task, java.util.Date end) {
+    public void changeEndDate(Task task, OffsetDateTime end) {
         Task persistedTask = requireTask(task);
         persistedTask.setEnd(end);
         taskJpaRepository.save(persistedTask);

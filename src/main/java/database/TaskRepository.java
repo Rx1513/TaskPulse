@@ -5,6 +5,7 @@ import tasks.Task;
 import tasks.TaskPreview;
 import users.User;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +21,8 @@ public interface TaskRepository {
     public void changeDescription(Task task, String description);
     public void changeAssignee(Task task, User assignee);
     public void changeCreator(Task task, User assignee);
-    public void changeStartDate(Task task, Date start);
-    public void changeEndDate(Task task, Date end);
+    public void changeStartDate(Task task, OffsetDateTime start);
+    public void changeEndDate(Task task, OffsetDateTime end);
     public void changeTitle(Task task, String title);
     public void changeProject(Task task, String project);
     public void addComment(Task task, User commentator, String comment);

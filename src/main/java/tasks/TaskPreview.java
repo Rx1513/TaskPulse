@@ -12,6 +12,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import lombok.*;
@@ -42,13 +44,11 @@ public abstract class TaskPreview {
     @Column(nullable = false)
     private Status status;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "start_date")
-    private Date start;
+    @Column(name = "start_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime start;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "end_date")
-    private Date end;
+    @Column(name = "end_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime end;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignee_id")
