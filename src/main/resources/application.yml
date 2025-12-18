@@ -12,14 +12,3 @@ spring:
       hibernate:
         format_sql: true
     show-sql: false
-logging:
-  level:
-    org.springframework.security: DEBUG
-server:
-  servlet:
-    session:
-      cookie:
-        secure: false # Отключенно пока нет https соединения.
-        http-only: true
-        same-site: strict
-      timeout: 30m
