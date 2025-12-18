@@ -1,0 +1,46 @@
+package tasks;
+
+import database.TaskRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import users.User;
+
+import java.time.LocalDate;
+import java.util.Date;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class TaskService {
+
+    @Autowired
+    private final TaskRepository taskRepository;
+
+    public void createTask(
+            String project,
+            String title,
+            String description,
+            User creator,
+            User assignee,
+            LocalDate startDate,
+            LocalDate endDate,
+            Status status
+    ) {
+
+        Task task = Task.builder()
+                .creator(creator)
+                .description(description)
+                .title(title)
+                .project(project)
+                .assignee(assignee)
+                .start(startDate)
+                .end(endDate)
+                .status(status)
+                .build();
+
+        taskRepository.addTask(task);
+    }
+}
+
