@@ -1,54 +1,70 @@
 package web;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import tasks.Task;
 
 @Controller
 public class ContentController {
-    @GetMapping("/auth/register")
-    public ModelAndView register() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to registration page!");
 
-        return mv;
-    }
+    private final List<Task> tasks = new ArrayList<>();
+    private String currentUser = null;
 
     @GetMapping("/auth/login")
     public ModelAndView login() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("auth");
-
-        return mv;
+        return new ModelAndView("login");
     }
 
-    // Main page
-    @GetMapping(path = {"/tasks", "/index", "/"})
-    public ModelAndView index() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to main page!");
-
-        return mv;
+    @GetMapping("/auth/register")
+    public ModelAndView register() {
+        return new ModelAndView("register");
     }
 
-    @GetMapping("/task/show/{id}")
-    public ModelAndView task() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to task view page!");
-
+    @GetMapping(path = {"/tasks","/"})
+    public ModelAndView tasks() {
+        ModelAndView mv = new ModelAndView("tasks");
+        mv.addObject("tasks", tasks);
+        mv.addObject("currentUser", currentUser);
         return mv;
     }
 
     @GetMapping("/task/new")
-    public ModelAndView showTaskCreationPage() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to task creation page!");
-
+    public ModelAndView newTaskForm() {
+        ModelAndView mv = new ModelAndView("new_task");
+        mv.addObject("currentUser", currentUser);
         return mv;
     }
-}
 
+    @GetMapping("/task/show/{id}")
+    public ModelAndView showTask(@PathVariable int id) {
+        return tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .map(task -> {
+                    ModelAndView mv = new ModelAndView("show_task");
+                    mv.addObject("task", task);
+                    mv.addObject("currentUser", currentUser);
+                    return mv;
+                })
+                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
+    }
+
+    @GetMapping("/task/edit/{id}")
+    public ModelAndView editTaskForm(@PathVariable int id) {
+        return tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .map(task -> {
+                    ModelAndView mv = new ModelAndView("edit_task");
+                    mv.addObject("task", task);
+                    mv.addObject("currentUser", currentUser);
+                    return mv;
+                })
+                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
+    }
+}
