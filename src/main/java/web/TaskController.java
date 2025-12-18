@@ -65,4 +65,10 @@ public class TaskController {
 
         return new RedirectView("/tasks");
     }
+
+    @PostMapping("/task/delete/{id}")
+    public RedirectView deleteTask(@PathVariable int id) {
+        taskService.deleteTaskById(id);
+        return new RedirectView("/tasks");
+    }
 }
