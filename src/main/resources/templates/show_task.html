@@ -21,11 +21,11 @@
         <div class="task-main" style="flex: 2;">
             <h2 th:text="${task.title}"></h2>
 
-            <p><strong>Создатель:</strong> <span th:text="${task.creator}">Имя</span></p>
+            <p><strong>Создатель:</strong> <span th:text="${task.creator.name}">Имя</span></p>
             <p><strong>Проект:</strong> <span th:text="${task.project}"></span></p>
-            <p><strong>Исполнитель:</strong> <span th:text="${task.assignee}"></span></p>
-            <p><strong>Дата начала:</strong> <span th:text="${task.startDate}"></span></p>
-            <p><strong>Дата окончания:</strong> <span th:text="${task.endDate}"></span></p>
+            <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.name}"></span></p>
+            <p><strong>Дата начала:</strong> <span th:text="${task.start}"></span></p>
+            <p><strong>Дата окончания:</strong> <span th:text="${task.end}"></span></p>
             <p><strong>Статус:</strong> <span th:text="${task.status}"></span></p>
             <p><strong>Описание:</strong><br><span th:text="${task.description}"></span></p>
 
@@ -61,17 +61,17 @@
         <div class="task-watchers" style="flex: 1; min-width: 180px;">
             <h4>Наблюдатели</h4>
             <ul>
-                <li th:each="user : ${task.watchers}" th:text="${user}">Пользователь</li>
+                <li th:each="user : ${task.subscriptionList}" th:text="${user.name}">Пользователь</li>
             </ul>
 
-            <!-- Подписка -->
-            <form th:if="${!task.watchers.contains(currentUser)}"
+            <!--     Подписка-->
+            <form th:if="${!task.watchers.subscriptionList(currentUser)}"
                   th:action="@{/task/{id}/observe(id=${task.id})}" method="post">
                 <button class="btn primary">Подписаться</button>
             </form>
 
             <!-- Отписка -->
-            <form th:if="${task.watchers.contains(currentUser)}"
+            <form th:if="${task.subscriptionList.contains(currentUser)}"
                   th:action="@{/task/{id}/unobserve(id=${task.id})}" method="post">
                 <button class="btn danger">Отписаться</button>
             </form>
