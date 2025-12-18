@@ -57,6 +57,13 @@ public class ContentController {
                 .orElseGet(() -> new ModelAndView("redirect:/tasks"));
     }
 
+    @GetMapping("/task/new")
+    public ModelAndView newTaskForm() {
+        ModelAndView mv = new ModelAndView("new_task");
+        mv.addObject("currentUser", currentUser);
+        return mv;
+    }
+
     @PostMapping("/task/new")
     public RedirectView createTask(
             @RequestParam String project,
@@ -70,13 +77,19 @@ public class ContentController {
         return new RedirectView("/tasks");
     }
 
-    @GetMapping("/task/new")
-    public ModelAndView newTaskForm() {
-        ModelAndView mv = new ModelAndView("new_task");
-        mv.addObject("currentUser", currentUser);
-        return mv;
+    @GetMapping("/task/edit/{id}")
+    public ModelAndView editTaskForm(@PathVariable int id) {
+        return tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .map(task -> {
+                    ModelAndView mv = new ModelAndView("edit_task");
+                    mv.addObject("task", task);
+                    mv.addObject("currentUser", currentUser);
+                    return mv;
+                })
+                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
     }
-
 
     @PostMapping("/task/edit/{id}")
     public RedirectView editTask(@PathVariable int id,
@@ -104,20 +117,6 @@ public class ContentController {
         return new RedirectView("/task/show/" + id);
     }
 
-    @GetMapping("/task/edit/{id}")
-    public ModelAndView editTaskForm(@PathVariable int id) {
-        return tasks.stream()
-                .filter(t -> t.getId() == id)
-                .findFirst()
-                .map(task -> {
-                    ModelAndView mv = new ModelAndView("edit_task");
-                    mv.addObject("task", task);
-                    mv.addObject("currentUser", currentUser);
-                    return mv;
-                })
-                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
-    }
-
     @PostMapping("/task/delete/{id}")
     public RedirectView deleteTask(@PathVariable int id) {
         tasks.removeIf(t -> t.getId() == id);
@@ -135,6 +134,26 @@ public class ContentController {
                 .findFirst()
                 .ifPresent(t -> t.comments.add(new Comment(currentUser, text)));
 
+        return new RedirectView("/task/show/" + id);
+    }
+
+    /* ---------- watchers ---------- */
+
+    @PostMapping("/task/{id}/observe")
+    public RedirectView subscribe(@PathVariable int id) {
+        tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .ifPresent(t -> t.addObserver(currentUser));
+        return new RedirectView("/task/show/" + id);
+    }
+
+    @PostMapping("/task/{id}/unobserve")
+    public RedirectView unsubscribe(@PathVariable int id) {
+        tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .ifPresent(t -> t.removeObserver(currentUser));
         return new RedirectView("/task/show/" + id);
     }
 
@@ -167,6 +186,7 @@ public class ContentController {
         private final String creator;
 
         private final List<Comment> comments = new ArrayList<>();
+        private final List<String> watchers = new ArrayList<>();
 
         public Task(String project, String title, String description,
                     String assignee, String startDate, String endDate,
@@ -190,5 +210,14 @@ public class ContentController {
         public String getStatus() { return status; }
         public String getCreator() { return creator; }
         public List<Comment> getComments() { return comments; }
+        public List<String> getWatchers() { return watchers; }
+
+        public void addObserver(String user) {
+            if (!watchers.contains(user)) watchers.add(user);
+        }
+
+        public void removeObserver(String user) {
+            watchers.remove(user);
+        }
     }
 }
