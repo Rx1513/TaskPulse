@@ -29,36 +29,48 @@
 
     <form method="post" th:action="@{/task/new}" class="card" id="taskForm">
 
-        <label>Проект *</label>
-        <input type="text" name="project" required>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Проект *</label>
+                <input type="text" name="project" required>
+            </div>
 
-        <label>Тема *</label>
-        <input type="text" name="title" required>
+            <div class="form-group">
+                <label>Тема *</label>
+                <input type="text" name="title" required>
+            </div>
+        </div>
 
-        <label>Описание *</label>
-        <textarea name="description" rows="5" required></textarea>
+        <div class="form-group full-width">
+            <label>Описание *</label>
+            <textarea name="description" rows="5" required></textarea>
+        </div>
 
-        <label>Исполнитель *</label>
-        <select name="assignee" required>
-            <option value="">Выберите исполнителя</option>
-            <option>Иван</option>
-            <option>Анна</option>
-            <option>Даниил</option>
-        </select>
+        <div class="form-group full-width">
+            <label>Исполнитель *</label>
+            <select name="assignee" required>
+                <option value="">Выберите исполнителя</option>
+                <option>Иван</option>
+                <option>Анна</option>
+                <option>Даниил</option>
+            </select>
+        </div>
 
-        <div class="row">
-            <div>
+        <div class="form-row">
+            <div class="form-group">
                 <label>Дата начала *</label>
                 <input type="date" name="startDate" id="startDate" required>
             </div>
-            <div>
+            <div class="form-group">
                 <label>Дата окончания *</label>
                 <input type="date" name="endDate" id="endDate" required>
             </div>
         </div>
+
         <button type="submit" class="btn primary">Создать задачу</button>
         <input type="hidden" name="status" value="Новая">
     </form>
+
 
     <a href="/tasks" class="btn link">← Назад</a>
 </div>

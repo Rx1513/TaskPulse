@@ -134,5 +134,29 @@ header .btn {
 }
 
 
+/* Заменяем старый .row */
+.form-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.full-width {
+    flex-basis: 100%;
+}
+
+textarea {
+    resize: vertical;
+}
+
+
 
 

@@ -25,46 +25,49 @@
             <span th:text="${task.creator}">Имя</span>
         </p>
 
-        <form th:action="@{/task/edit/{id}(id=${task.id})}" method="post">
+        <form th:action="@{/task/edit/{id}(id=${task.id})}" method="post" class="card">
 
-            <p>
-                <strong>Название:</strong>
-                <input type="text" name="title" th:value="${task.title}">
-            </p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" name="title" th:value="${task.title}">
+                </div>
+                <div class="form-group">
+                    <label>Проект</label>
+                    <input type="text" name="project" th:value="${task.project}">
+                </div>
+            </div>
 
-            <p>
-                <strong>Проект:</strong>
-                <input type="text" name="project" th:value="${task.project}">
-            </p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Исполнитель</label>
+                    <input type="text" name="assignee" th:value="${task.assignee}">
+                </div>
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select name="status">
+                        <option th:selected="${task.status=='Новая'}">Новая</option>
+                        <option th:selected="${task.status=='В работе'}">В работе</option>
+                        <option th:selected="${task.status=='Завершено'}">Завершено</option>
+                    </select>
+                </div>
+            </div>
 
-            <p>
-                <strong>Исполнитель:</strong>
-                <input type="text" name="assignee" th:value="${task.assignee}">
-            </p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Дата начала</label>
+                    <input type="date" name="startDate" th:value="${task.startDate}">
+                </div>
+                <div class="form-group">
+                    <label>Дата окончания</label>
+                    <input type="date" name="endDate" th:value="${task.endDate}">
+                </div>
+            </div>
 
-            <p>
-                <strong>Дата начала:</strong>
-                <input type="date" name="startDate" th:value="${task.startDate}">
-            </p>
-
-            <p>
-                <strong>Дата окончания:</strong>
-                <input type="date" name="endDate" th:value="${task.endDate}">
-            </p>
-
-            <p>
-                <strong>Описание:</strong><br>
+            <div class="form-group full-width">
+                <label>Описание</label>
                 <textarea name="description" rows="4" th:text="${task.description}"></textarea>
-            </p>
-
-            <p>
-                <strong>Статус:</strong>
-                <select name="status">
-                    <option th:selected="${task.status=='Новая'}">Новая</option>
-                    <option th:selected="${task.status=='В работе'}">В работе</option>
-                    <option th:selected="${task.status=='Завершено'}">Завершено</option>
-                </select>
-            </p>
+            </div>
 
             <button class="btn save">Сохранить</button>
         </form>
