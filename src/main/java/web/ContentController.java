@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,18 +26,18 @@ public class ContentController {
         return new ModelAndView("register");
     }
 
-    @GetMapping(path = {"/tasks","/"})
-    public ModelAndView tasks() {
+    @GetMapping(path = { "/tasks", "/" })
+    public ModelAndView tasks(Principal principal) {
         ModelAndView mv = new ModelAndView("tasks");
         mv.addObject("tasks", tasks);
-        mv.addObject("currentUser", currentUser);
+        mv.addObject("currentUser", principal.getName());
         return mv;
     }
 
     @GetMapping("/task/new")
-    public ModelAndView newTaskForm() {
+    public ModelAndView newTaskForm(Principal principal) {
         ModelAndView mv = new ModelAndView("new_task");
-        mv.addObject("currentUser", currentUser);
+        mv.addObject("currentUser", principal.getName());
         return mv;
     }
 
