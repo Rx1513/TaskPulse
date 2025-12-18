@@ -94,6 +94,9 @@
     startInput.addEventListener('change', () => {
         endInput.min = startInput.value;
     });
+    endInput.addEventListener('change', () => {
+        startInput.max = endInput.value;
+    });
 </script>
 
 </body>
