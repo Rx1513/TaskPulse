@@ -3,6 +3,7 @@ package tasks;
 import database.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import users.User;
@@ -49,6 +50,34 @@ public class TaskService {
     public void deleteTaskById(long id) {
         Optional<Task> task = taskRepository.findTaskById(id);
         task.ifPresent(taskRepository::deleteTask);
+    }
+
+    public void changeTaskById(long id,
+                               String project,
+                               String title,
+                               String description,
+                               User assignee,
+                               LocalDate startDate,
+                               LocalDate endDate,
+                               Status status) {
+        Optional<Task> taskToReplace = taskRepository.findTaskById(id);
+        if (taskToReplace.isEmpty()) {
+            throw new EmptyResultDataAccessException("Изменяемая задача недоступна!", 1);
+        }
+        Task newTask = Task.builder()
+                .id(taskToReplace.get().getId())
+                .creator(taskToReplace.get().getCreator())
+                .description(description)
+                .title(title)
+                .project(project)
+                .assignee(assignee)
+                .start(startDate)
+                .end(endDate)
+                .status(status)
+                .subscriptionList(taskToReplace.get().getSubscriptionList())
+                .build();
+
+        taskRepository.changeTask(taskToReplace.get(),newTask);
     }
 }
 
