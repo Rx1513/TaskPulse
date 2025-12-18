@@ -58,7 +58,7 @@ public class TaskController {
                 title,
                 description,
                 creator.get(),
-                creator.get(),
+                assigneeUser.get(),
                 startDate,
                 endDate,
                 Status.NEW);
