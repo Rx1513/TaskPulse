@@ -37,7 +37,7 @@
             </div>
             <div class="task-info">
                 <span th:text="${task.project}">Проект</span>
-                <span th:text="${task.assignee}">Исполнитель</span>
+                <span th:text="${task.assignee.name}">Исполнитель</span>
             </div>
             <a th:href="@{/task/show/{id}(id=${task.id})}" class="btn small">Открыть</a>
         </div>
