@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Новая задача</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .row {
+            display: flex;
+            gap: 20px; /* сдвигаем поля по горизонтали */
+        }
+        .row > div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
+        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+    </div>
+</header>
+<hr>
+
+
+<div class="container">
+    <h2>Создание задачи</h2>
+
+    <form method="post" th:action="@{/task/new}" class="card" id="taskForm">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Проект *</label>
+                <input type="text" name="project" required>
+            </div>
+
+            <div class="form-group">
+                <label>Тема *</label>
+                <input type="text" name="title" required>
+            </div>
+        </div>
+
+        <div class="form-group full-width">
+            <label>Описание *</label>
+            <textarea name="description" rows="5" required></textarea>
+        </div>
+
+        <div class="form-group full-width">
+            <label>Исполнитель *</label>
+            <select name="assignee" required>
+                <option value="">Выберите исполнителя</option>
+                <option>Иван</option>
+                <option>Анна</option>
+                <option>Даниил</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Дата начала *</label>
+                <input type="date" name="startDate" id="startDate" required>
+            </div>
+            <div class="form-group">
+                <label>Дата окончания *</label>
+                <input type="date" name="endDate" id="endDate" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn primary">Создать задачу</button>
+        <input type="hidden" name="status" value="Новая">
+    </form>
+
+
+    <a href="/tasks" class="btn link">← Назад</a>
+</div>
+
+<script>
+    const form = document.getElementById('taskForm');
+    const startInput = document.getElementById('startDate');
+    const endInput = document.getElementById('endDate');
+
+    form.addEventListener('submit', function (e) {
+        const startDate = new Date(startInput.value);
+        const endDate = new Date(endInput.value);
+
+        if (endDate < startDate) {
+            e.preventDefault();
+            alert('Дата окончания не может быть раньше даты начала!');
+        }
+    });
+
+    // Ограничение выбора дат прямо в поле
+    startInput.addEventListener('change', () => {
+        endInput.min = startInput.value;
+    });
+</script>
+
+</body>
+</html>

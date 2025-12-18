@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Задачи</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
+        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+    </div>
+</header>
+<hr>
+
+
+<div class="container">
+    <div class="header">
+        <h2>Мои задачи</h2>
+        <a href="/task/new" class="btn primary">+ Создать задачу</a>
+    </div>
+
+    <div class="list">
+        <div class="task-card" th:each="task : ${tasks}">
+            <div class="task-header">
+                <h3 th:text="${task.title}">Задача</h3>
+                <span class="status"
+                      th:classappend="${task.status == 'Новая' ? ' status-new' : task.status == 'В работе' ? ' status-inprogress' : ' status-done'}"
+                      th:text="${task.status}">Статус</span>
+            </div>
+            <div class="task-info">
+                <span th:text="${task.project}">Проект</span>
+                <span th:text="${task.assignee}">Исполнитель</span>
+            </div>
+            <a th:href="@{/task/show/{id}(id=${task.id})}" class="btn small">Открыть</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
