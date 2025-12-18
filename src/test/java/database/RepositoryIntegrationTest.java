@@ -153,7 +153,7 @@ class RepositoryIntegrationTest {
         taskRepository.changeTitle(persisted, "Updated title");
         taskRepository.changeDescription(persisted, "New description");
         taskRepository.changeProject(persisted, "Platform");
-        taskRepository.changePerformer(persisted, subscriber);
+        taskRepository.changeAssignee(persisted, subscriber);
         taskRepository.changeStartDate(persisted, new Date(1_000));
         taskRepository.changeEndDate(persisted, new Date(2_000));
 

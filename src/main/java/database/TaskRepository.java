@@ -18,8 +18,8 @@ public interface TaskRepository {
     public void addUserToSubscriptionList(Task task,User subscriber);
     public void changeTask(Task old_task,Task new_task);
     public void changeDescription(Task task, String description);
-    public void changePerformer(Task task, User performer);
-    public void changeCreator(Task task, User performer);
+    public void changeAssignee(Task task, User assignee);
+    public void changeCreator(Task task, User assignee);
     public void changeStartDate(Task task, Date start);
     public void changeEndDate(Task task, Date end);
     public void changeTitle(Task task, String title);

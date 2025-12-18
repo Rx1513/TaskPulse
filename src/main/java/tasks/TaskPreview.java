@@ -25,7 +25,7 @@ import users.User;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = "performer")
+@ToString(exclude = "assignee")
 public abstract class TaskPreview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,6 +51,7 @@ public abstract class TaskPreview {
     private Date end;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "performer_id")
-    private User performer;
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
+
 }

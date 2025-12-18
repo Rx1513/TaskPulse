@@ -42,8 +42,8 @@ public class TaskRepositoryImpl implements TaskRepository {
     @Override
     public void addTask(Task task) {
         requireUser(task.getCreator());
-        if (task.getPerformer() != null) {
-            requireUser(task.getPerformer());
+        if (task.getAssignee() != null) {
+            requireUser(task.getAssignee());
         }
         if (task.getStatus() == null) {
             task.setStatus(Status.NEW);
@@ -74,9 +74,9 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void changePerformer(Task task, User performer) {
+    public void changeAssignee(Task task, User assignee) {
         Task persistedTask = requireTask(task);
-        persistedTask.setPerformer(requireUser(performer));
+        persistedTask.setAssignee(requireUser(assignee));
         taskJpaRepository.save(persistedTask);
     }
 
@@ -134,7 +134,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     public List<TaskPreview> getTasksPreviewsByUser(User user) {
         User persistedUser = requireUser(user);
         Set<Task> uniqueTasks = new LinkedHashSet<>();
-        uniqueTasks.addAll(taskJpaRepository.findByPerformer(persistedUser));
+        uniqueTasks.addAll(taskJpaRepository.findByAssignee(persistedUser));
         uniqueTasks.addAll(taskJpaRepository.findByCreator(persistedUser));
         uniqueTasks.addAll(taskJpaRepository.findDistinctBySubscriptionListContaining(persistedUser));
         return new ArrayList<>(uniqueTasks);
@@ -180,10 +180,10 @@ public class TaskRepositoryImpl implements TaskRepository {
         persistedTask.setEnd(newTask.getEnd());
         persistedTask.setDescription(newTask.getDescription());
 
-        if (newTask.getPerformer() != null) {
-            persistedTask.setPerformer(requireUser(newTask.getPerformer()));
+        if (newTask.getAssignee() != null) {
+            persistedTask.setAssignee(requireUser(newTask.getAssignee()));
         } else {
-            persistedTask.setPerformer(null);
+            persistedTask.setAssignee(null);
         }
 
         if (newTask.getCreator() != null) {

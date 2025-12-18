@@ -8,7 +8,7 @@ import users.User;
 
 @Repository
 public interface TaskJpaRepository extends JpaRepository<Task, Long> {
-    List<Task> findByPerformer(User user);
+    List<Task> findByAssignee(User user);
 
     List<Task> findByCreator(User user);
 
