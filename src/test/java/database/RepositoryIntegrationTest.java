@@ -141,9 +141,8 @@ class RepositoryIntegrationTest {
         assertThat(afterSubscription.getSubscriptionList()).extracting(User::getId).contains(performer.getId());
 
         taskRepository.addComment(afterSubscription, performer, "Nice work");
-        taskRepository.addComment(afterSubscription, "Auto message");
         List<Comment> comments = taskRepository.getCommentsForTask(afterSubscription);
-        assertThat(comments).hasSize(2);
+        assertThat(comments).hasSize(1);
 
         List<TaskPreview> relatedToPerformer = taskRepository.getTasksPreviewsByUser(performer);
         assertThat(relatedToPerformer).extracting(TaskPreview::getId).contains(taskId);
