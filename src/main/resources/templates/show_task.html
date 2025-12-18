@@ -6,6 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+
 <header>
     <div class="header-container">
         <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
@@ -14,58 +15,89 @@
 </header>
 <hr>
 
-
 <div class="container">
     <div class="card">
+
         <h2 th:text="${task.title}"></h2>
+
         <p>
             <strong>Создатель:</strong>
-            <span th:text="${task.creator}">Имя пользователя</span>
+            <span th:text="${task.creator}">Имя</span>
         </p>
 
         <form th:action="@{/task/edit/{id}(id=${task.id})}" method="post">
+
             <p>
                 <strong>Название:</strong>
                 <input type="text" name="title" th:value="${task.title}">
             </p>
+
             <p>
                 <strong>Проект:</strong>
                 <input type="text" name="project" th:value="${task.project}">
             </p>
+
             <p>
                 <strong>Исполнитель:</strong>
                 <input type="text" name="assignee" th:value="${task.assignee}">
             </p>
+
             <p>
                 <strong>Дата начала:</strong>
                 <input type="date" name="startDate" th:value="${task.startDate}">
             </p>
+
             <p>
                 <strong>Дата окончания:</strong>
                 <input type="date" name="endDate" th:value="${task.endDate}">
             </p>
+
             <p>
                 <strong>Описание:</strong><br>
-                <textarea name="description" rows="5" th:text="${task.description}"></textarea>
+                <textarea name="description" rows="4" th:text="${task.description}"></textarea>
             </p>
 
             <p>
                 <strong>Статус:</strong>
-                <select name="status" required>
-                    <option th:value="'Новая'" th:selected="${task.status == 'Новая'}">Новая</option>
-                    <option th:value="'В работе'" th:selected="${task.status == 'В работе'}">В работе</option>
-                    <option th:value="'Завершено'" th:selected="${task.status == 'Завершено'}">Завершено</option>
+                <select name="status">
+                    <option th:selected="${task.status=='Новая'}">Новая</option>
+                    <option th:selected="${task.status=='В работе'}">В работе</option>
+                    <option th:selected="${task.status=='Завершено'}">Завершено</option>
                 </select>
             </p>
 
-            <button class="btn save">Сохранить изменения</button>
+            <button class="btn save">Сохранить</button>
+        </form>
+
+        <hr>
+
+        <!-- ===== КОММЕНТАРИИ ===== -->
+        <h3>Комментарии</h3>
+
+        <div th:if="${#lists.isEmpty(task.comments)}">
+            <p>Комментариев пока нет</p>
+        </div>
+
+        <div th:each="comment : ${task.comments}" class="task-card">
+            <p>
+                <strong th:text="${comment.author}">Автор</strong>:
+                <span th:text="${comment.text}">Комментарий</span>
+            </p>
+        </div>
+
+        <form th:action="@{/task/{id}/comment(id=${task.id})}" method="post">
+            <textarea name="text" rows="3" required
+                      placeholder="Написать комментарий..."></textarea>
+            <br>
+            <button class="btn primary">Отправить</button>
         </form>
 
         <hr>
 
         <form th:action="@{/task/delete/{id}(id=${task.id})}" method="post">
-            <button type="submit" class="btn danger">Удалить задачу</button>
+            <button class="btn danger">Удалить задачу</button>
         </form>
+
     </div>
 
     <a href="/tasks" class="btn link">← К списку задач</a>
