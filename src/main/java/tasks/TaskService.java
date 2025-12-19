@@ -1,6 +1,7 @@
 package tasks;
 
 import database.TaskRepository;
+import email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -18,6 +19,8 @@ public class TaskService {
 
     @Autowired
     private final TaskRepository taskRepository;
+
+    private final EmailService emailService;
 
     public void createTask(
             String project,
@@ -46,11 +49,15 @@ public class TaskService {
         users.add(assignee);
         task.setSubscriptionList(users);
         taskRepository.addTask(task);
+        emailService.sendNewTaskNotification(task);
     }
 
-    public void deleteTaskById(long id) {
+    public void deleteTaskById(long id, User editor) {
         Optional<Task> task = taskRepository.findTaskById(id);
-        task.ifPresent(taskRepository::deleteTask);
+        if (task.isPresent()) {
+            taskRepository.deleteTask(task.get());
+            emailService.sendDeletedTaskNotification(task.get(), editor);
+        }
     }
 
     public void changeTaskById(long id,
@@ -60,7 +67,8 @@ public class TaskService {
                                User assignee,
                                LocalDate startDate,
                                LocalDate endDate,
-                               Status status) {
+                               Status status,
+                               User editor) {
         Optional<Task> taskToReplace = taskRepository.findTaskById(id);
         if (taskToReplace.isEmpty()) {
             throw new EmptyResultDataAccessException("Изменяемая задача недоступна!", 1);
@@ -79,6 +87,7 @@ public class TaskService {
                 .build();
 
         taskRepository.changeTask(taskToReplace.get(),newTask);
+        emailService.sendEditedTaskNotification(taskToReplace.get(), editor);
     }
 
     public void addCommentToTaskById(long id, User user,
@@ -88,6 +97,7 @@ public class TaskService {
             throw new EmptyResultDataAccessException("Изменяемая задача недоступна!", 1);
         }
         taskRepository.addComment(task.get(),user,comment);
+        emailService.sendCommentUpdateNotification(task.get());
     }
 
     public void addToSubscriptionByTaskId(long id, User user) {

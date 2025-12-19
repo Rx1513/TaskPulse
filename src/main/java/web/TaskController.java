@@ -6,6 +6,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -62,8 +63,12 @@ public class TaskController {
     }
 
     @PostMapping("/task/delete/{id}")
-    public RedirectView deleteTask(@PathVariable long id) {
-        taskService.deleteTaskById(id);
+    public RedirectView deleteTask(@PathVariable long id, Principal principal) {
+        Optional<User> editor = userRepository.findUserByName(principal.getName());
+        if (editor.isEmpty()) {
+            throw new EmptyResultDataAccessException("Удалитель задачи не найден! " + principal.getName(), 1);
+        }
+        taskService.deleteTaskById(id,editor.get());
         return new RedirectView("/tasks");
     }
 
@@ -79,9 +84,9 @@ public class TaskController {
                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                      LocalDate endDate,
                                  @RequestParam Status status, Principal principal) {
-        Optional<User> creator = userRepository.findUserByName(principal.getName());
-        if (creator.isEmpty()) {
-            throw new EmptyResultDataAccessException("Создатель задачи не найден! " + principal.getName(), 1);
+        Optional<User> editor = userRepository.findUserByName(principal.getName());
+        if (editor.isEmpty()) {
+            throw new EmptyResultDataAccessException("Редактор задачи не найден! " + principal.getName(), 1);
         }
 
         Optional<User> assigneeUser = userRepository.findUserByName(assignee);
@@ -97,7 +102,8 @@ public class TaskController {
                 assigneeUser.get(),
                 startDate,
                 endDate,
-                status);
+                status,
+                editor.get());
 
         return new RedirectView("/task/show/" + id);
     }
