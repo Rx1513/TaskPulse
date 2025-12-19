@@ -26,7 +26,7 @@
             <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.name}"></span></p>
             <p><strong>Дата начала:</strong> <span th:text="${task.start}"></span></p>
             <p><strong>Дата окончания:</strong> <span th:text="${task.end}"></span></p>
-            <p><strong>Статус:</strong> <span th:text="${task.status}"></span></p>
+            <p><strong>Статус:</strong> <span th:text="${task.status.displayName}"></span></p>
             <p><strong>Описание:</strong><br><span th:text="${task.description}"></span></p>
 
             <hr>
@@ -65,8 +65,8 @@
                 <li th:each="user : ${task.subscriptionList}" th:text="${user.name}">Пользователь</li>
             </ul>
 
-            <!--     Подписка-->
-            <form th:if="${!task.watchers.subscriptionList(currentUser)}"
+<!--             Подписка-->
+            <form th:if="${!task.subscriptionList(currentUser)}"
                   th:action="@{/task/{id}/observe(id=${task.id})}" method="post">
                 <button class="btn primary">Подписаться</button>
             </form>
