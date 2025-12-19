@@ -36,12 +36,13 @@
         </div>
 
         <div class="form-row">
-            <div class="form-group full-width">
+            <div class="form-group">
                 <label>Исполнитель *</label>
 
                 <input type="text"
                        id="assigneeInput"
                        name="assignee"
+                       th:value="${task.assignee != null ? task.assignee.name : ''}"
                        placeholder="Начните вводить имя"
                        autocomplete="off">
 
@@ -89,10 +90,6 @@
 
     input.addEventListener('input', async () => {
         const q = input.value.trim();
-        if (q.length < 2) {
-            list.innerHTML = '';
-            return;
-        }
 
         const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
         const users = await res.json();

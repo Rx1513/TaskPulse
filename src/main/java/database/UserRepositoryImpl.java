@@ -83,11 +83,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> searchUsers(String query, int limit) {
-        if (query == null || query.isBlank()) {
+        if (query == null) {
             return Collections.emptyList();
         }
         int pageSize = limit > 0 ? limit : 10;
-        return userJpaRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
-                query, query, PageRequest.of(0, pageSize));
+        return userJpaRepository.findByNameContainingIgnoreCase(
+                query, PageRequest.of(0, pageSize));
     }
 }
