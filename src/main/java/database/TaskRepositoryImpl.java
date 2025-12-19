@@ -66,6 +66,14 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
+    public void removeUserFromSubscriptionList(Task task, User subscriber) {
+        Task persistedTask = requireTask(task);
+        User persistedUser = requireUser(subscriber);
+        persistedTask.getSubscriptionList().remove(persistedUser);
+        taskJpaRepository.save(persistedTask);
+    }
+
+    @Override
     public void changeTask(Task old_task, Task new_task) {
         Task persistedTask = requireTask(old_task);
         copyTaskFields(persistedTask, new_task);

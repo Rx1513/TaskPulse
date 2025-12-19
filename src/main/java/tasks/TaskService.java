@@ -42,6 +42,7 @@ public class TaskService {
                 .subscriptionList(new HashSet<>())
                 .build();
         Set users = task.getSubscriptionList();
+        users.add(creator);
         users.add(assignee);
         task.setSubscriptionList(users);
         taskRepository.addTask(task);
@@ -87,6 +88,22 @@ public class TaskService {
             throw new EmptyResultDataAccessException("Изменяемая задача недоступна!", 1);
         }
         taskRepository.addComment(task.get(),user,comment);
+    }
+
+    public void addToSubscriptionByTaskId(long id, User user) {
+        Optional<Task> task = taskRepository.findTaskById(id);
+        if (task.isEmpty()) {
+            throw new EmptyResultDataAccessException("Изменяемая задача недоступна!", 1);
+        }
+        taskRepository.addUserToSubscriptionList(task.get(),user);
+    }
+
+    public void removeFromSubscriptionByTaskId(long id, User user) {
+        Optional<Task> task = taskRepository.findTaskById(id);
+        if (task.isEmpty()) {
+            throw new EmptyResultDataAccessException("Изменяемая задача недоступна!", 1);
+        }
+        taskRepository.removeUserFromSubscriptionList(task.get(),user);
     }
 }
 

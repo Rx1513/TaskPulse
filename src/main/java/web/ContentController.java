@@ -60,12 +60,20 @@ public class ContentController {
     @GetMapping("/task/show/{id}")
     public ModelAndView showTask(@PathVariable int id, Principal principal) {
         ModelAndView mv = new ModelAndView("show_task");
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Комментатор не найден! " + principal.getName(), 1);
+        }
         mv.addObject("currentUser", principal.getName());
         Optional<Task> task = taskRepository.findTaskById(id);
         if (task.isEmpty()) {
             return new ModelAndView("redirect:/tasks");
         }
         mv.addObject("task", task.get());
+
+        boolean subscribed =  task.get().getSubscriptionList().contains(user.get());
+        mv.addObject("subscribed", subscribed);
+
         return mv;
     }
 

@@ -63,25 +63,22 @@
 
         </div>
 
-        <!-- Наблюдатели справа -->
         <div class="task-watchers" style="flex: 1; min-width: 180px;">
             <h4>Наблюдатели</h4>
             <ul>
                 <li th:each="user : ${task.subscriptionList}" th:text="${user.name}">Пользователь</li>
             </ul>
 
-<!--             Подписка-->
-<!--            <form th:if="${task.subscriptionList(currentUser)}"-->
-<!--                  th:action="@{/task/{id}/observe(id=${task.id})}" method="post">-->
-<!--                <button class="btn primary">Подписаться</button>-->
-<!--            </form>-->
+            <form th:if="${!subscribed}"
+                  th:action="@{/task/{id}/observe(id=${task.id})}" method="post">
+                <button class="btn primary">Подписаться</button>
+            </form>
 
-<!--            &lt;!&ndash; Отписка &ndash;&gt;-->
-<!--            <form th:if="${task.subscriptionList.contains(currentUser)}"-->
-<!--                  th:action="@{/task/{id}/unobserve(id=${task.id})}" method="post">-->
-<!--                <button class="btn danger">Отписаться</button>-->
-<!--            </form>-->
-<!--        </div>-->
+            <form th:if="${subscribed}"
+                  th:action="@{/task/{id}/unobserve(id=${task.id})}" method="post">
+                <button class="btn danger">Отписаться</button>
+            </form>
+        </div>
 
     </div>
 

@@ -18,6 +18,7 @@ public interface TaskRepository {
     public void addTask(Task task);
     public void deleteTask(Task task);
     public void addUserToSubscriptionList(Task task,User subscriber);
+    public void removeUserFromSubscriptionList(Task task,User subscriber);
     public void changeTask(Task old_task,Task new_task);
     public void changeDescription(Task task, String description);
     public void changeAssignee(Task task, User assignee);

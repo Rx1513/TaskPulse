@@ -62,13 +62,13 @@ public class TaskController {
     }
 
     @PostMapping("/task/delete/{id}")
-    public RedirectView deleteTask(@PathVariable int id) {
+    public RedirectView deleteTask(@PathVariable long id) {
         taskService.deleteTaskById(id);
         return new RedirectView("/tasks");
     }
 
     @PostMapping("/task/edit/{id}")
-    public RedirectView editTask(@PathVariable int id,
+    public RedirectView editTask(@PathVariable long id,
                                  @RequestParam String project,
                                  @RequestParam String title,
                                  @RequestParam String description,
@@ -103,7 +103,7 @@ public class TaskController {
     }
 
     @PostMapping("/task/{id}/comment")
-    public RedirectView addComment(@PathVariable int id,
+    public RedirectView addComment(@PathVariable long id,
                                    @RequestParam String text, Principal principal) {
 
         Optional<User> user = userRepository.findUserByName(principal.getName());
@@ -112,6 +112,26 @@ public class TaskController {
         }
         taskService.addCommentToTaskById(id, user.get(), text);
 
+        return new RedirectView("/task/show/" + id);
+    }
+
+    @PostMapping("/task/{id}/observe")
+    public RedirectView subscribe(@PathVariable long id, Principal principal) {
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Текущий пользователь не найден! " + principal.getName(), 1);
+        }
+        taskService.addToSubscriptionByTaskId(id,user.get());
+        return new RedirectView("/task/show/" + id);
+    }
+
+    @PostMapping("/task/{id}/unobserve")
+    public RedirectView unsubscribe(@PathVariable long id, Principal principal) {
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Текущий пользователь не найден! " + principal.getName(), 1);
+        }
+        taskService.removeFromSubscriptionByTaskId(id,user.get());
         return new RedirectView("/task/show/" + id);
     }
 }
