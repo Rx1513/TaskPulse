@@ -154,12 +154,5 @@ public class TaskRepositoryImpl implements TaskRepository {
         if (newTask.getCreator() != null) {
             persistedTask.setCreator(requireUser(newTask.getCreator()));
         }
-
-        persistedTask.getSubscriptionList().clear();
-        if (newTask.getSubscriptionList() != null) {
-            newTask
-                    .getSubscriptionList()
-                    .forEach(subscriber -> persistedTask.getSubscriptionList().add(requireUser(subscriber)));
-        }
     }
 }
