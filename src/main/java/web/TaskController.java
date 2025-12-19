@@ -1,12 +1,9 @@
 package web;
 
-import database.TaskRepository;
 import database.UserRepository;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -15,10 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import tasks.Status;
-import tasks.Task;
 import tasks.TaskService;
 import users.User;
 
@@ -103,6 +98,19 @@ public class TaskController {
                 startDate,
                 endDate,
                 status);
+
+        return new RedirectView("/task/show/" + id);
+    }
+
+    @PostMapping("/task/{id}/comment")
+    public RedirectView addComment(@PathVariable int id,
+                                   @RequestParam String text, Principal principal) {
+
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Комментатор не найден! " + principal.getName(), 1);
+        }
+        taskService.addCommentToTaskById(id, user.get(), text);
 
         return new RedirectView("/task/show/" + id);
     }

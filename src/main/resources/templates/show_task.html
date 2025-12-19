@@ -48,8 +48,8 @@
             </div>
             <div th:each="comment : ${task.comments}" class="task-card">
                 <p>
-                <strong th:text="${comment.author}">Автор</strong>:
-                <span th:text="${comment.text}">Комментарий</span>
+                <strong th:text="${comment.commentator.name}">Автор</strong>:
+                <span th:text="${comment.content}">Комментарий</span>
                 </p>
             </div>
 

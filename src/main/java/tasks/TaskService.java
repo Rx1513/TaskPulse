@@ -79,5 +79,14 @@ public class TaskService {
 
         taskRepository.changeTask(taskToReplace.get(),newTask);
     }
+
+    public void addCommentToTaskById(long id, User user,
+                                     String comment) {
+        Optional<Task> task = taskRepository.findTaskById(id);
+        if (task.isEmpty()) {
+            throw new EmptyResultDataAccessException("Изменяемая задача недоступна!", 1);
+        }
+        taskRepository.addComment(task.get(),user,comment);
+    }
 }
 
