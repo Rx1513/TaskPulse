@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 
+import tasks.Status;
 import tasks.Task;
 import users.User;
+import users.UserSearchDTO;
 
 @Controller
 public class ContentController {
@@ -70,12 +72,22 @@ public class ContentController {
     @GetMapping("/task/edit/{id}")
     public ModelAndView editTaskForm(@PathVariable int id, Principal principal) {
         ModelAndView mv = new ModelAndView("edit_task");
-        mv.addObject("currentUser", principal.getName());
         Optional<Task> task = taskRepository.findTaskById(id);
         if (task.isEmpty()) {
             return new ModelAndView("redirect:/tasks");
         }
+        mv.addObject("currentUser", principal.getName());
+        mv.addObject("statuses", Status.values());
         mv.addObject("task", task.get());
         return mv;
+    }
+
+    @GetMapping("/api/users/search")
+    @ResponseBody
+    public List<UserSearchDTO> searchUsers(@RequestParam String q) {
+        return userRepository.searchUsers(q,10)
+                .stream()
+                .map(u -> new UserSearchDTO(u.getId(), u.getName()))
+                .toList();
     }
 }

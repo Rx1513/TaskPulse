@@ -32,12 +32,16 @@
 
         <div class="form-group full-width">
             <label>Исполнитель *</label>
-            <select name="assignee" required>
-                <option value="">Выберите исполнителя</option>
-                <option>Иван</option>
-                <option>Анна</option>
-                <option>Даниил</option>
-            </select>
+
+            <input type="text"
+                   id="assigneeInput"
+                   name="assignee"
+                   placeholder="Начните вводить имя"
+                   autocomplete="off">
+
+            <input type="hidden" name="assigneeId" id="assigneeId">
+
+            <ul id="suggestions" class="suggestions"></ul>
         </div>
 
         <div class="form-row">
@@ -79,6 +83,34 @@
 
     startInput.addEventListener('change', () => endInput.min = startInput.value);
     endInput.addEventListener('change', () => startInput.max = endInput.value);
+</script>
+<script>
+    const input = document.getElementById('assigneeInput');
+    const hidden = document.getElementById('assigneeId');
+    const list = document.getElementById('suggestions');
+
+    input.addEventListener('input', async () => {
+        const q = input.value.trim();
+        if (q.length < 2) {
+            list.innerHTML = '';
+            return;
+        }
+
+        const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
+        const users = await res.json();
+
+        list.innerHTML = '';
+        users.forEach(u => {
+            const li = document.createElement('li');
+            li.textContent = u.name;
+            li.onclick = () => {
+                input.value = u.name;
+                hidden.value = u.id;
+                list.innerHTML = '';
+            };
+            list.appendChild(li);
+        });
+    });
 </script>
 
 </body>
