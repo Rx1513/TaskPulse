@@ -122,7 +122,7 @@ public class EmailService {
         sendEmailNotification(task.getSubscriptionList(), subject, body);
     }
 
-    private void sendEmailNotification(Set<User> subscriberList, String subject ,String body) {
+    void sendEmailNotification(Set<User> subscriberList, String subject ,String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("taskpulse@yandex.ru");
         message.setSubject(subject);
