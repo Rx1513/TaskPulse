@@ -88,8 +88,8 @@ class UserRepositoryImplTest {
     @Test
     void searchUsersDelegatesToRepository() {
         List<User> expected = List.of(User.builder().name("A").build());
-        given(userJpaRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
-                        eq("al"), eq("al"), any(PageRequest.class)))
+        given(userJpaRepository.findByNameContainingIgnoreCase(
+                        eq("al"), any(PageRequest.class)))
                 .willReturn(expected);
 
         List<User> result = repository.searchUsers("al", -1);
@@ -97,7 +97,7 @@ class UserRepositoryImplTest {
         assertThat(result).isEqualTo(expected);
         ArgumentCaptor<PageRequest> captor = ArgumentCaptor.forClass(PageRequest.class);
         verify(userJpaRepository)
-                .findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(eq("al"), eq("al"), captor.capture());
+                .findByNameContainingIgnoreCase(eq("al"), captor.capture());
         assertThat(captor.getValue().getPageSize()).isEqualTo(10); // default when limit invalid
     }
 }
