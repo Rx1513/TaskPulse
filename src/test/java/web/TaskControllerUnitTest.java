@@ -90,7 +90,7 @@ class TaskControllerUnitTest {
         Status lastStatus;
 
         public CapturingTaskService() {
-            super(null);
+            super(null, null);
         }
 
         @Override
