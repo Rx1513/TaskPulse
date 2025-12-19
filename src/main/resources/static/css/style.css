@@ -178,7 +178,9 @@ textarea {
     color: #666;
 }
 
-
+.comment-card {
+    word-break: break-word;
+}
 
 .comment-form-card {
     border: 1px solid #ccc;
