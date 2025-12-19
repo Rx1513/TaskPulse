@@ -15,14 +15,26 @@ public final class UserValidator {
     private UserValidator() {}
 
     public static void validateEmail(String email) {
-        if (email == null || email.isBlank() || !EMAIL_REGEX.matcher(email).matches()) {
-            throw new IllegalArgumentException("Invalid email");
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Электронная почта не может быть пустой");
+        }
+
+        if (!EMAIL_REGEX.matcher(email).matches()) {
+            throw new IllegalArgumentException("Формат почты неверный (ожидаемый формат: user@example.com)");
         }
     }
 
     public static void validateName(String name) {
-        if (name == null || name.isBlank() || !NAME_REGEX.matcher(name).matches()) {
-            throw new IllegalArgumentException("Invalid name");
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Имя пользователя не может быть пустым!");
+        }
+
+        if (name.length() < 2) {
+            throw new IllegalArgumentException("Имя пользователя должно состоять хотя бы из двух символов!");
+        }
+
+        if (!NAME_REGEX.matcher(name).matches()) {
+            throw new IllegalArgumentException("Имя пользователя может содержать только латинские буквы, числа, подчёркивания и дефисы!");
         }
     }
 }

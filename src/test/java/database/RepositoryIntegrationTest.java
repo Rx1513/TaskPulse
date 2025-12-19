@@ -6,10 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import database.jpa.CommentJpaRepository;
 import database.jpa.TaskJpaRepository;
 import database.jpa.UserJpaRepository;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import javax.naming.AuthenticationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -19,6 +20,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -32,21 +34,29 @@ import web.HttpServer;
 @SpringBootTest(
         classes = HttpServer.class,
         properties = {"spring.test.database.replace=NONE"})
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @TestInstance(Lifecycle.PER_CLASS)
 @Transactional
 class RepositoryIntegrationTest {
+
+    static {
+        System.setProperty("jna.tmpdir", "target");
+        System.setProperty("org.testcontainers.tmpdir", "target");
+    }
 
     @Container
     private static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>("postgres:16-alpine").withDatabaseName("taskpulse");
 
-    static {
-        POSTGRES.start();
-    }
-
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
+        boolean dockerAvailable = false;
+        try {
+            dockerAvailable = DockerClientFactory.instance().isDockerAvailable();
+        } catch (Throwable ignored) {
+            // assume below will handle failures
+        }
+        Assumptions.assumeTrue(dockerAvailable, "Docker is not available, skipping integration tests");
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
@@ -71,8 +81,8 @@ class RepositoryIntegrationTest {
 
     @Test
     void addAndVerifyUser() throws Exception {
-        User user = User.builder().name("Alice").email("alice@example.com").build();
-        userRepository.addUser(user, "pa55word");
+        User user = User.builder().name("Alice").email("alice@example.com").passwordHash("pa55word").build();
+        userRepository.addUser(user);
 
         assertThat(user.getId()).isNotNull();
 
@@ -87,34 +97,61 @@ class RepositoryIntegrationTest {
 
     @Test
     void duplicateEmailThrowsException() {
-        User user = User.builder().name("Bob").email("bob@example.com").build();
-        userRepository.addUser(user, "secret");
+        User user = User.builder().name("Bob").email("bob@example.com").passwordHash("secret").build();
+        userRepository.addUser(user);
 
-        User duplicate = User.builder().name("Bobby").email("bob@example.com").build();
-        assertThatThrownBy(() -> userRepository.addUser(duplicate, "another"))
+        User duplicate = User.builder().name("Bobby").email("bob@example.com").passwordHash("another").build();
+        assertThatThrownBy(() -> userRepository.addUser(duplicate))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
+    void searchUsersReturnsMatchesAndHonorsLimit() {
+        User alice = User.builder().name("Alice").email("alice@example.com").passwordHash("p1").build();
+        userRepository.addUser(alice);
+
+        User albert = User.builder().name("Albert").email("albert@example.com").passwordHash("p2").build();
+        userRepository.addUser(albert);
+
+        User bob = User.builder().name("Bob").email("builder@tools.com").passwordHash("p3").build();
+        userRepository.addUser(bob);
+
+        assertThat(userRepository.searchUsers("al", 10))
+                .extracting(User::getEmail)
+                .containsExactlyInAnyOrder("alice@example.com", "albert@example.com");
+
+        assertThat(userRepository.searchUsers("builder", 1)).hasSize(1);
+    }
+
+    @Test
+    void searchUsersReturnsEmptyOnBlankOrNoMatch() {
+        User alice = User.builder().name("Alice").email("alice@example.com").passwordHash("p1").build();
+        userRepository.addUser(alice);
+
+        assertThat(userRepository.searchUsers("   ", 5)).isEmpty();
+        assertThat(userRepository.searchUsers("nomatch", 5)).isEmpty();
+    }
+
+    @Test
     void taskLifecycleCoversUpdatesAndRelations() {
-        User creator = User.builder().name("Creator").email("creator@task.com").build();
-        userRepository.addUser(creator, "cpass");
+        User creator = User.builder().name("Creator").email("creator@task.com").passwordHash("cpass").build();
+        userRepository.addUser(creator);
 
-        User performer = User.builder().name("Performer").email("performer@task.com").build();
-        userRepository.addUser(performer, "ppass");
+        User performer = User.builder().name("Performer").email("performer@task.com").passwordHash("ppass").build();
+        userRepository.addUser(performer);
 
-        User subscriber = User.builder().name("Subscriber").email("subscriber@task.com").build();
-        userRepository.addUser(subscriber, "spass");
+        User subscriber = User.builder().name("Subscriber").email("subscriber@task.com").passwordHash("spass").build();
+        userRepository.addUser(subscriber);
 
         Task task = new Task();
         task.setTitle("Initial");
         task.setProject("TaskPulse");
         task.setStatus(Status.NEW);
         task.setCreator(creator);
-        task.setPerformer(performer);
+        task.setAssignee(performer);
         task.setDescription("Old description");
-        task.setStart(new Date());
-        task.setEnd(new Date(System.currentTimeMillis() + 3_600_000));
+        task.setStart(java.time.LocalDate.now());
+        task.setEnd(java.time.LocalDate.now().plusDays(1));
 
         taskRepository.addTask(task);
         Long taskId = task.getId();
@@ -123,25 +160,33 @@ class RepositoryIntegrationTest {
         assertThat(persisted.getStatus()).isEqualTo(Status.NEW);
         assertThat(persisted.getCreator().getId()).isEqualTo(creator.getId());
 
-        taskRepository.changeTitle(persisted, "Updated title");
-        taskRepository.changeDescription(persisted, "New description");
-        taskRepository.changeProject(persisted, "Platform");
-        taskRepository.changePerformer(persisted, subscriber);
-        taskRepository.changeStartDate(persisted, new Date(1_000));
-        taskRepository.changeEndDate(persisted, new Date(2_000));
+        Task changed =
+                Task.builder()
+                        .id(persisted.getId())
+                        .creator(creator)
+                        .title("Updated title")
+                        .description("New description")
+                        .project("Platform")
+                        .status(Status.INWORK)
+                        .assignee(subscriber)
+                        .start(java.time.LocalDate.of(2024, 1, 1))
+                        .end(java.time.LocalDate.of(2024, 1, 2))
+                        .build();
+
+        taskRepository.changeTask(persisted, changed);
 
         Task updated = taskRepository.findTaskById(taskId).orElseThrow();
         assertThat(updated.getTitle()).isEqualTo("Updated title");
         assertThat(updated.getDescription()).isEqualTo("New description");
         assertThat(updated.getProject()).isEqualTo("Platform");
-        assertThat(updated.getPerformer().getId()).isEqualTo(subscriber.getId());
+        assertThat(updated.getAssignee().getId()).isEqualTo(subscriber.getId());
 
         taskRepository.addUserToSubscriptionList(updated, performer);
         Task afterSubscription = taskRepository.findTaskById(taskId).orElseThrow();
         assertThat(afterSubscription.getSubscriptionList()).extracting(User::getId).contains(performer.getId());
 
         taskRepository.addComment(afterSubscription, performer, "Nice work");
-        taskRepository.addComment(afterSubscription, "Auto message");
+        taskRepository.addComment(afterSubscription, subscriber, "Auto message");
         List<Comment> comments = taskRepository.getCommentsForTask(afterSubscription);
         assertThat(comments).hasSize(2);
 

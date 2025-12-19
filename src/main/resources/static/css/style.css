@@ -157,6 +157,58 @@ textarea {
     resize: vertical;
 }
 
+.comment-card {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    position: relative;
+    background-color: #f9f9f9;
+}
 
+.comment-header {
+    display: flex;
+    justify-content: space-between; /* имя слева, время справа */
+    align-items: center;
+    margin-bottom: 4px;
+}
 
+.comment-time {
+    font-size: 0.8em;
+    color: #666;
+}
 
+.comment-card {
+    word-break: break-word;
+}
+
+.comment-form-card {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px;
+    background-color: #fefefe;
+    margin-bottom: 12px;
+}
+
+.comment-form-card .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment-form-card textarea {
+    width: 100%;             /* растягиваем на всю ширину блока */
+    box-sizing: border-box;  /* padding не увеличивает ширину */
+    resize: vertical;        /* можно менять высоту */
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    font-size: 0.95em;
+}
+
+.comment-form-card button {
+    display: inline-block;
+    padding: 6px 12px;
+}

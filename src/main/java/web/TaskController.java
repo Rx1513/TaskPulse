@@ -1,0 +1,143 @@
+package web;
+
+import database.UserRepository;
+
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.Optional;
+
+import email.EmailService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+import tasks.Status;
+import tasks.TaskService;
+import users.User;
+
+@Controller
+@RequiredArgsConstructor
+public class TaskController {
+    @Autowired
+    UserRepository userRepository;
+
+    final TaskService taskService;
+
+    @PostMapping("/task/new")
+    public RedirectView createTask(
+            @RequestParam String project,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam String assignee,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDate startDate,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDate endDate,
+            Principal principal
+    ) {
+        Optional<User> creator = userRepository.findUserByName(principal.getName());
+        if (creator.isEmpty()) {
+            throw new EmptyResultDataAccessException("Создатель задачи не найден! " + principal.getName(), 1);
+        }
+
+        Optional<User> assigneeUser = userRepository.findUserByName(assignee);
+        if (assigneeUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("Исполнитель задачи не найден! " + assignee, 1);
+        }
+
+        taskService.createTask(
+                project,
+                title,
+                description,
+                creator.get(),
+                assigneeUser.get(),
+                startDate,
+                endDate,
+                Status.NEW);
+
+        return new RedirectView("/tasks");
+    }
+
+    @PostMapping("/task/delete/{id}")
+    public RedirectView deleteTask(@PathVariable long id, Principal principal) {
+        Optional<User> editor = userRepository.findUserByName(principal.getName());
+        if (editor.isEmpty()) {
+            throw new EmptyResultDataAccessException("Удалитель задачи не найден! " + principal.getName(), 1);
+        }
+        taskService.deleteTaskById(id,editor.get());
+        return new RedirectView("/tasks");
+    }
+
+    @PostMapping("/task/edit/{id}")
+    public RedirectView editTask(@PathVariable long id,
+                                 @RequestParam String project,
+                                 @RequestParam String title,
+                                 @RequestParam String description,
+                                 @RequestParam String assignee,
+                                 @RequestParam
+                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                     LocalDate startDate,
+                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                     LocalDate endDate,
+                                 @RequestParam Status status, Principal principal) {
+        Optional<User> editor = userRepository.findUserByName(principal.getName());
+        if (editor.isEmpty()) {
+            throw new EmptyResultDataAccessException("Редактор задачи не найден! " + principal.getName(), 1);
+        }
+
+        Optional<User> assigneeUser = userRepository.findUserByName(assignee);
+        if (assigneeUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("Исполнитель задачи не найден! " + assignee, 1);
+        }
+
+        taskService.changeTaskById(
+                id,
+                project,
+                title,
+                description,
+                assigneeUser.get(),
+                startDate,
+                endDate,
+                status,
+                editor.get());
+
+        return new RedirectView("/task/show/" + id);
+    }
+
+    @PostMapping("/task/{id}/comment")
+    public RedirectView addComment(@PathVariable long id,
+                                   @RequestParam String text, Principal principal) {
+
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Комментатор не найден! " + principal.getName(), 1);
+        }
+        taskService.addCommentToTaskById(id, user.get(), text);
+
+        return new RedirectView("/task/show/" + id);
+    }
+
+    @PostMapping("/task/{id}/observe")
+    public RedirectView subscribe(@PathVariable long id, Principal principal) {
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Текущий пользователь не найден! " + principal.getName(), 1);
+        }
+        taskService.addToSubscriptionByTaskId(id,user.get());
+        return new RedirectView("/task/show/" + id);
+    }
+
+    @PostMapping("/task/{id}/unobserve")
+    public RedirectView unsubscribe(@PathVariable long id, Principal principal) {
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Текущий пользователь не найден! " + principal.getName(), 1);
+        }
+        taskService.removeFromSubscriptionByTaskId(id,user.get());
+        return new RedirectView("/task/show/" + id);
+    }
+}

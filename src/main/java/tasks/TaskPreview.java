@@ -12,20 +12,22 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+
+import java.time.LocalDate;
 import java.util.Date;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import users.User;
 
 @MappedSuperclass
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = "performer")
+@ToString(exclude = "assignee")
 public abstract class TaskPreview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,15 +44,14 @@ public abstract class TaskPreview {
     @Column(nullable = false)
     private Status status;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "start_date")
-    private Date start;
+    private LocalDate start;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "end_date")
-    private Date end;
+    private LocalDate end;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "performer_id")
-    private User performer;
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
+
 }

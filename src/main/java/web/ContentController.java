@@ -1,55 +1,101 @@
 package web;
 
+import database.TaskRepository;
+import database.UserRepository;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+
+import tasks.Status;
+import tasks.Task;
+import users.User;
+import users.UserSearchDTO;
 
 @Controller
 public class ContentController {
-    @GetMapping("/auth/register")
-    public ModelAndView register() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to registration page!");
 
-        return mv;
-    }
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    TaskRepository taskRepository;
 
     @GetMapping("/auth/login")
     public ModelAndView login() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to login page!");
-
-        return mv;
+        return new ModelAndView("login");
     }
 
-    // Main page
-    @GetMapping(path = {"/tasks", "/index", "/"})
-    public ModelAndView index() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to main page!");
-
-        return mv;
+    @GetMapping("/auth/register")
+    public ModelAndView register() {
+        return new ModelAndView("register");
     }
 
-    @GetMapping("/task/show/{id}")
-    public ModelAndView task() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to task view page!");
-
+    @GetMapping(path = { "/tasks", "/" })
+    public ModelAndView tasks(Principal principal) {
+        ModelAndView mv = new ModelAndView("tasks");
+        Optional<User> curerentUser = userRepository.findUserByName(principal.getName());
+        if (curerentUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("Текущий авторизованный пользователь не найден! " + principal.getName(), 1);
+        }
+        mv.addObject("tasks", taskRepository.getTasksPreviewsByUser(curerentUser.get()));
+        mv.addObject("currentUser", principal.getName());
         return mv;
     }
 
     @GetMapping("/task/new")
-    public ModelAndView showTaskCreationPage() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("dummy");
-        mv.getModel().put("data", "Welcome to task creation page!");
+    public ModelAndView newTaskForm(Principal principal) {
+        ModelAndView mv = new ModelAndView("new_task");
+        mv.addObject("currentUser", principal.getName());
+        return mv;
+    }
+
+    @GetMapping("/task/show/{id}")
+    public ModelAndView showTask(@PathVariable int id, Principal principal) {
+        ModelAndView mv = new ModelAndView("show_task");
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Комментатор не найден! " + principal.getName(), 1);
+        }
+        mv.addObject("currentUser", principal.getName());
+        Optional<Task> task = taskRepository.findTaskById(id);
+        if (task.isEmpty()) {
+            return new ModelAndView("redirect:/tasks");
+        }
+        mv.addObject("task", task.get());
+
+        boolean subscribed =  task.get().getSubscriptionList().contains(user.get());
+        mv.addObject("subscribed", subscribed);
 
         return mv;
     }
-}
 
+    @GetMapping("/task/edit/{id}")
+    public ModelAndView editTaskForm(@PathVariable int id, Principal principal) {
+        ModelAndView mv = new ModelAndView("edit_task");
+        Optional<Task> task = taskRepository.findTaskById(id);
+        if (task.isEmpty()) {
+            return new ModelAndView("redirect:/tasks");
+        }
+        mv.addObject("currentUser", principal.getName());
+        mv.addObject("statuses", Status.values());
+        mv.addObject("task", task.get());
+        return mv;
+    }
+
+    @GetMapping("/api/users/search")
+    @ResponseBody
+    public List<UserSearchDTO> searchUsers(@RequestParam String q) {
+        return userRepository.searchUsers(q,10)
+                .stream()
+                .map(u -> new UserSearchDTO(u.getId(), u.getName()))
+                .toList();
+    }
+}
