@@ -8,8 +8,13 @@
 <body>
 <header>
     <div class="header-container">
-        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
-        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+        <span th:text="'Текущий пользователь: ' + ${currentUser}">Пользователь</span>
+        <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button type="submit" class="btn link">Выйти</button>
+        </form>
     </div>
 </header>
 <hr>
@@ -17,19 +22,24 @@
 <div class="container">
     <div class="card task-container" style="display: flex; gap: 24px; align-items: flex-start;">
 
-        <!-- Основная информация задачи -->
         <div class="task-main" style="flex: 2;">
             <h2 th:text="${task.title}"></h2>
 
-            <p><strong>Создатель:</strong> <span th:text="${task.creator}">Имя</span></p>
+            <p><strong>Создатель:</strong> <span th:text="${task.creator.name}">Имя</span></p>
             <p><strong>Проект:</strong> <span th:text="${task.project}"></span></p>
-            <p><strong>Исполнитель:</strong> <span th:text="${task.assignee}"></span></p>
-            <p><strong>Дата начала:</strong> <span th:text="${task.startDate}"></span></p>
-            <p><strong>Дата окончания:</strong> <span th:text="${task.endDate}"></span></p>
-            <p><strong>Статус:</strong> <span th:text="${task.status}"></span></p>
+            <p><strong>Исполнитель:</strong> <span th:text="${task.assignee.name}"></span></p>
+            <p><strong>Дата начала:</strong> <span th:text="${task.start}"></span></p>
+            <p><strong>Дата окончания:</strong> <span th:text="${task.end}"></span></p>
+            <p><strong>Статус:</strong> <span th:text="${task.status.displayName}"></span></p>
             <p><strong>Описание:</strong><br><span th:text="${task.description}"></span></p>
 
             <hr>
+
+            <a th:href="@{/task/edit/{id}(id=${task.id})}" class="btn primary">Редактировать</a>
+            <form th:action="@{/task/delete/{id}(id=${task.id})}" method="post" style="display:inline"
+                  onsubmit="return confirm('Вы уверены, что хотите удалить эту задачу?');">
+                <button class="btn danger">Удалить задачу</button>
+            </form>
 
             <!-- ===== КОММЕНТАРИИ ===== -->
             <h3>Комментарии</h3>
@@ -38,8 +48,8 @@
             </div>
             <div th:each="comment : ${task.comments}" class="task-card">
                 <p>
-                    <strong th:text="${comment.author}">Автор</strong>:
-                    <span th:text="${comment.text}">Комментарий</span>
+                <strong th:text="${comment.commentator.name}">Автор</strong>:
+                <span th:text="${comment.content}">Комментарий</span>
                 </p>
             </div>
 
@@ -51,27 +61,20 @@
 
             <hr>
 
-            <a th:href="@{/task/edit/{id}(id=${task.id})}" class="btn primary">Редактировать</a>
-            <form th:action="@{/task/delete/{id}(id=${task.id})}" method="post" style="display:inline">
-                <button class="btn danger">Удалить задачу</button>
-            </form>
         </div>
 
-        <!-- Наблюдатели справа -->
         <div class="task-watchers" style="flex: 1; min-width: 180px;">
             <h4>Наблюдатели</h4>
             <ul>
-                <li th:each="user : ${task.watchers}" th:text="${user}">Пользователь</li>
+                <li th:each="user : ${task.subscriptionList}" th:text="${user.name}">Пользователь</li>
             </ul>
 
-            <!-- Подписка -->
-            <form th:if="${!task.watchers.contains(currentUser)}"
+            <form th:if="${!subscribed}"
                   th:action="@{/task/{id}/observe(id=${task.id})}" method="post">
                 <button class="btn primary">Подписаться</button>
             </form>
 
-            <!-- Отписка -->
-            <form th:if="${task.watchers.contains(currentUser)}"
+            <form th:if="${subscribed}"
                   th:action="@{/task/{id}/unobserve(id=${task.id})}" method="post">
                 <button class="btn danger">Отписаться</button>
             </form>

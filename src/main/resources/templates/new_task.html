@@ -2,27 +2,22 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Новая задача</title>
+    <title>Создание задачи</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        .row {
-            display: flex;
-            gap: 20px; /* сдвигаем поля по горизонтали */
-        }
-        .row > div {
-            flex: 1;
-        }
-    </style>
 </head>
 <body>
 <header>
     <div class="header-container">
-        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
-        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+        <span th:text="'Текущий пользователь: ' + ${currentUser}">Пользователь</span>
+        <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button type="submit" class="btn link">Выйти</button>
+        </form>
     </div>
 </header>
 <hr>
-
 
 <div class="container">
     <h2>Создание задачи</h2>
@@ -31,29 +26,27 @@
 
         <div class="form-row">
             <div class="form-group">
+                <label>Название *</label>
+                <input type="text" name="title" required>
+            </div>
+            <div class="form-group">
                 <label>Проект *</label>
                 <input type="text" name="project" required>
             </div>
-
-            <div class="form-group">
-                <label>Тема *</label>
-                <input type="text" name="title" required>
-            </div>
-        </div>
-
-        <div class="form-group full-width">
-            <label>Описание *</label>
-            <textarea name="description" rows="5" required></textarea>
         </div>
 
         <div class="form-group full-width">
             <label>Исполнитель *</label>
-            <select name="assignee" required>
-                <option value="">Выберите исполнителя</option>
-                <option>Иван</option>
-                <option>Анна</option>
-                <option>Даниил</option>
-            </select>
+
+            <input type="text"
+                   id="assigneeInput"
+                   name="assignee"
+                   placeholder="Начните вводить имя"
+                   autocomplete="off">
+
+            <input type="hidden" name="assigneeId" id="assigneeId">
+
+            <ul id="suggestions" class="suggestions"></ul>
         </div>
 
         <div class="form-row">
@@ -67,8 +60,12 @@
             </div>
         </div>
 
+        <div class="form-group full-width">
+            <label>Описание *</label>
+            <textarea name="description" rows="5" required></textarea>
+        </div>
+
         <button type="submit" class="btn primary">Создать задачу</button>
-        <input type="hidden" name="status" value="Новая">
     </form>
 
 
@@ -83,16 +80,41 @@
     form.addEventListener('submit', function (e) {
         const startDate = new Date(startInput.value);
         const endDate = new Date(endInput.value);
-
         if (endDate < startDate) {
             e.preventDefault();
             alert('Дата окончания не может быть раньше даты начала!');
         }
     });
 
-    // Ограничение выбора дат прямо в поле
-    startInput.addEventListener('change', () => {
-        endInput.min = startInput.value;
+    startInput.addEventListener('change', () => endInput.min = startInput.value);
+    endInput.addEventListener('change', () => startInput.max = endInput.value);
+</script>
+<script>
+    const input = document.getElementById('assigneeInput');
+    const hidden = document.getElementById('assigneeId');
+    const list = document.getElementById('suggestions');
+
+    input.addEventListener('input', async () => {
+        const q = input.value.trim();
+        if (q.length < 2) {
+            list.innerHTML = '';
+            return;
+        }
+
+        const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
+        const users = await res.json();
+
+        list.innerHTML = '';
+        users.forEach(u => {
+            const li = document.createElement('li');
+            li.textContent = u.name;
+            li.onclick = () => {
+                input.value = u.name;
+                hidden.value = u.id;
+                list.innerHTML = '';
+            };
+            list.appendChild(li);
+        });
     });
 </script>
 

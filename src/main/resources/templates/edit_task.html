@@ -8,8 +8,13 @@
 <body>
 <header>
     <div class="header-container">
-        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
-        <a th:href="@{/auth/logout}" class="btn link">Выйти</a>
+        <span th:text="'Текущий пользователь: ' + ${currentUser}">Пользователь</span>
+        <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button type="submit" class="btn link">Выйти</button>
+        </form>
     </div>
 </header>
 <hr>
@@ -31,16 +36,27 @@
         </div>
 
         <div class="form-row">
-            <div class="form-group">
-                <label>Исполнитель</label>
-                <input type="text" name="assignee" th:value="${task.assignee}">
+            <div class="form-group full-width">
+                <label>Исполнитель *</label>
+
+                <input type="text"
+                       id="assigneeInput"
+                       name="assignee"
+                       placeholder="Начните вводить имя"
+                       autocomplete="off">
+
+                <input type="hidden" name="assigneeId" id="assigneeId">
+
+                <ul id="suggestions" class="suggestions"></ul>
             </div>
             <div class="form-group">
                 <label>Статус</label>
                 <select name="status">
-                    <option th:selected="${task.status=='Новая'}">Новая</option>
-                    <option th:selected="${task.status=='В работе'}">В работе</option>
-                    <option th:selected="${task.status=='Завершено'}">Завершено</option>
+                    <option th:each="status : ${statuses}"
+                            th:value="${status}"
+                            th:text="${status.displayName}"
+                            th:selected="${task.status == status}">
+                    </option>
                 </select>
             </div>
         </div>
@@ -48,11 +64,11 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Дата начала</label>
-                <input type="date" name="startDate" th:value="${task.startDate}">
+                <input type="date" name="startDate" th:value="${task.start}">
             </div>
             <div class="form-group">
                 <label>Дата окончания</label>
-                <input type="date" name="endDate" th:value="${task.endDate}">
+                <input type="date" name="endDate" th:value="${task.end}">
             </div>
         </div>
 
@@ -66,5 +82,33 @@
 
     <a th:href="@{/task/show/{id}(id=${task.id})}" class="btn link">← Назад</a>
 </div>
+<script>
+    const input = document.getElementById('assigneeInput');
+    const hidden = document.getElementById('assigneeId');
+    const list = document.getElementById('suggestions');
+
+    input.addEventListener('input', async () => {
+        const q = input.value.trim();
+        if (q.length < 2) {
+            list.innerHTML = '';
+            return;
+        }
+
+        const res = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
+        const users = await res.json();
+
+        list.innerHTML = '';
+        users.forEach(u => {
+            const li = document.createElement('li');
+            li.textContent = u.name;
+            li.onclick = () => {
+                input.value = u.name;
+                hidden.value = u.id;
+                list.innerHTML = '';
+            };
+            list.appendChild(li);
+        });
+    });
+</script>
 </body>
 </html>

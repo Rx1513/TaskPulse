@@ -1,19 +1,32 @@
 package web;
 
+import database.TaskRepository;
+import database.UserRepository;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import tasks.Status;
 import tasks.Task;
+import users.User;
+import users.UserSearchDTO;
 
 @Controller
 public class ContentController {
 
-    private final List<Task> tasks = new ArrayList<>();
-    private String currentUser = null;
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    TaskRepository taskRepository;
 
     @GetMapping("/auth/login")
     public ModelAndView login() {
@@ -25,46 +38,64 @@ public class ContentController {
         return new ModelAndView("register");
     }
 
-    @GetMapping(path = {"/tasks","/"})
-    public ModelAndView tasks() {
+    @GetMapping(path = { "/tasks", "/" })
+    public ModelAndView tasks(Principal principal) {
         ModelAndView mv = new ModelAndView("tasks");
-        mv.addObject("tasks", tasks);
-        mv.addObject("currentUser", currentUser);
+        Optional<User> curerentUser = userRepository.findUserByName(principal.getName());
+        if (curerentUser.isEmpty()) {
+            throw new EmptyResultDataAccessException("Текущий авторизованный пользователь не найден! " + principal.getName(), 1);
+        }
+        mv.addObject("tasks", taskRepository.getTasksPreviewsByUser(curerentUser.get()));
+        mv.addObject("currentUser", principal.getName());
         return mv;
     }
 
     @GetMapping("/task/new")
-    public ModelAndView newTaskForm() {
+    public ModelAndView newTaskForm(Principal principal) {
         ModelAndView mv = new ModelAndView("new_task");
-        mv.addObject("currentUser", currentUser);
+        mv.addObject("currentUser", principal.getName());
         return mv;
     }
 
     @GetMapping("/task/show/{id}")
-    public ModelAndView showTask(@PathVariable int id) {
-        return tasks.stream()
-                .filter(t -> t.getId() == id)
-                .findFirst()
-                .map(task -> {
-                    ModelAndView mv = new ModelAndView("show_task");
-                    mv.addObject("task", task);
-                    mv.addObject("currentUser", currentUser);
-                    return mv;
-                })
-                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
+    public ModelAndView showTask(@PathVariable int id, Principal principal) {
+        ModelAndView mv = new ModelAndView("show_task");
+        Optional<User> user = userRepository.findUserByName(principal.getName());
+        if (user.isEmpty()) {
+            throw new EmptyResultDataAccessException("Комментатор не найден! " + principal.getName(), 1);
+        }
+        mv.addObject("currentUser", principal.getName());
+        Optional<Task> task = taskRepository.findTaskById(id);
+        if (task.isEmpty()) {
+            return new ModelAndView("redirect:/tasks");
+        }
+        mv.addObject("task", task.get());
+
+        boolean subscribed =  task.get().getSubscriptionList().contains(user.get());
+        mv.addObject("subscribed", subscribed);
+
+        return mv;
     }
 
     @GetMapping("/task/edit/{id}")
-    public ModelAndView editTaskForm(@PathVariable int id) {
-        return tasks.stream()
-                .filter(t -> t.getId() == id)
-                .findFirst()
-                .map(task -> {
-                    ModelAndView mv = new ModelAndView("edit_task");
-                    mv.addObject("task", task);
-                    mv.addObject("currentUser", currentUser);
-                    return mv;
-                })
-                .orElseGet(() -> new ModelAndView("redirect:/tasks"));
+    public ModelAndView editTaskForm(@PathVariable int id, Principal principal) {
+        ModelAndView mv = new ModelAndView("edit_task");
+        Optional<Task> task = taskRepository.findTaskById(id);
+        if (task.isEmpty()) {
+            return new ModelAndView("redirect:/tasks");
+        }
+        mv.addObject("currentUser", principal.getName());
+        mv.addObject("statuses", Status.values());
+        mv.addObject("task", task.get());
+        return mv;
+    }
+
+    @GetMapping("/api/users/search")
+    @ResponseBody
+    public List<UserSearchDTO> searchUsers(@RequestParam String q) {
+        return userRepository.searchUsers(q,10)
+                .stream()
+                .map(u -> new UserSearchDTO(u.getId(), u.getName()))
+                .toList();
     }
 }

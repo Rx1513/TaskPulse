@@ -5,6 +5,7 @@ import database.jpa.TaskJpaRepository;
 import database.jpa.UserJpaRepository;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -42,8 +43,8 @@ public class TaskRepositoryImpl implements TaskRepository {
     @Override
     public void addTask(Task task) {
         requireUser(task.getCreator());
-        if (task.getPerformer() != null) {
-            requireUser(task.getPerformer());
+        if (task.getAssignee() != null) {
+            requireUser(task.getAssignee());
         }
         if (task.getStatus() == null) {
             task.setStatus(Status.NEW);
@@ -52,10 +53,23 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
+    public void deleteTask(Task task) {
+        taskJpaRepository.delete(task);
+    }
+
+    @Override
     public void addUserToSubscriptionList(Task task, User subscriber) {
         Task persistedTask = requireTask(task);
         User persistedUser = requireUser(subscriber);
         persistedTask.getSubscriptionList().add(persistedUser);
+        taskJpaRepository.save(persistedTask);
+    }
+
+    @Override
+    public void removeUserFromSubscriptionList(Task task, User subscriber) {
+        Task persistedTask = requireTask(task);
+        User persistedUser = requireUser(subscriber);
+        persistedTask.getSubscriptionList().remove(persistedUser);
         taskJpaRepository.save(persistedTask);
     }
 
@@ -74,9 +88,9 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void changePerformer(Task task, User performer) {
+    public void changeAssignee(Task task, User assignee) {
         Task persistedTask = requireTask(task);
-        persistedTask.setPerformer(requireUser(performer));
+        persistedTask.setAssignee(requireUser(assignee));
         taskJpaRepository.save(persistedTask);
     }
 
@@ -88,14 +102,14 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void changeStartDate(Task task, java.util.Date start) {
+    public void changeStartDate(Task task, LocalDate start) {
         Task persistedTask = requireTask(task);
         persistedTask.setStart(start);
         taskJpaRepository.save(persistedTask);
     }
 
     @Override
-    public void changeEndDate(Task task, java.util.Date end) {
+    public void changeEndDate(Task task, LocalDate end) {
         Task persistedTask = requireTask(task);
         persistedTask.setEnd(end);
         taskJpaRepository.save(persistedTask);
@@ -134,7 +148,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     public List<TaskPreview> getTasksPreviewsByUser(User user) {
         User persistedUser = requireUser(user);
         Set<Task> uniqueTasks = new LinkedHashSet<>();
-        uniqueTasks.addAll(taskJpaRepository.findByPerformer(persistedUser));
+        uniqueTasks.addAll(taskJpaRepository.findByAssignee(persistedUser));
         uniqueTasks.addAll(taskJpaRepository.findByCreator(persistedUser));
         uniqueTasks.addAll(taskJpaRepository.findDistinctBySubscriptionListContaining(persistedUser));
         return new ArrayList<>(uniqueTasks);
@@ -180,10 +194,10 @@ public class TaskRepositoryImpl implements TaskRepository {
         persistedTask.setEnd(newTask.getEnd());
         persistedTask.setDescription(newTask.getDescription());
 
-        if (newTask.getPerformer() != null) {
-            persistedTask.setPerformer(requireUser(newTask.getPerformer()));
+        if (newTask.getAssignee() != null) {
+            persistedTask.setAssignee(requireUser(newTask.getAssignee()));
         } else {
-            persistedTask.setPerformer(null);
+            persistedTask.setAssignee(null);
         }
 
         if (newTask.getCreator() != null) {
