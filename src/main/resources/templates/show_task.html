@@ -31,8 +31,9 @@
             <p><strong>Дата начала:</strong> <span th:text="${task.start}"></span></p>
             <p><strong>Дата окончания:</strong> <span th:text="${task.end}"></span></p>
             <p><strong>Статус:</strong> <span th:text="${task.status.displayName}"></span></p>
-            <p><strong>Описание:</strong><br><span th:text="${task.description}"></span></p>
-
+            <p><strong>Описание:</strong><br>
+                <span th:text="${task.description}" style="word-break: break-word; overflow-wrap: break-word;"></span>
+            </p>
             <hr>
 
             <a th:href="@{/task/edit/{id}(id=${task.id})}" class="btn primary">Редактировать</a>
