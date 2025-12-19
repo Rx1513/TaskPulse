@@ -20,13 +20,6 @@ public interface TaskRepository {
     public void addUserToSubscriptionList(Task task,User subscriber);
     public void removeUserFromSubscriptionList(Task task,User subscriber);
     public void changeTask(Task old_task,Task new_task);
-    public void changeDescription(Task task, String description);
-    public void changeAssignee(Task task, User assignee);
-    public void changeCreator(Task task, User assignee);
-    public void changeStartDate(Task task, LocalDate start);
-    public void changeEndDate(Task task, LocalDate end);
-    public void changeTitle(Task task, String title);
-    public void changeProject(Task task, String project);
     public void addComment(Task task, User commentator, String comment);
     public List<TaskPreview> getTasksPreviewsByUser(User user);
     public List<Comment> getCommentsForTask(Task task);

@@ -81,55 +81,6 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void changeDescription(Task task, String description) {
-        Task persistedTask = requireTask(task);
-        persistedTask.setDescription(description);
-        taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
-    public void changeAssignee(Task task, User assignee) {
-        Task persistedTask = requireTask(task);
-        persistedTask.setAssignee(requireUser(assignee));
-        taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
-    public void changeCreator(Task task, User creator) {
-        Task persistedTask = requireTask(task);
-        persistedTask.setCreator(requireUser(creator));
-        taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
-    public void changeStartDate(Task task, LocalDate start) {
-        Task persistedTask = requireTask(task);
-        persistedTask.setStart(start);
-        taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
-    public void changeEndDate(Task task, LocalDate end) {
-        Task persistedTask = requireTask(task);
-        persistedTask.setEnd(end);
-        taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
-    public void changeTitle(Task task, String title) {
-        Task persistedTask = requireTask(task);
-        persistedTask.setTitle(title);
-        taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
-    public void changeProject(Task task, String project) {
-        Task persistedTask = requireTask(task);
-        persistedTask.setProject(project);
-        taskJpaRepository.save(persistedTask);
-    }
-
-    @Override
     public void addComment(Task task, User commentator, String comment) {
         Task persistedTask = requireTask(task);
         User persistedUser = commentator != null ? requireUser(commentator) : null;
