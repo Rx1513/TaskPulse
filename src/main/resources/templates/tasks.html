@@ -8,7 +8,7 @@
 <body>
 <header>
     <div class="header-container">
-        <span th:text="'Пользователь: ' + ${currentUser}">Пользователь</span>
+        <span th:text="'Текущий пользователь: ' + ${currentUser}">Пользователь</span>
 
         <form th:action="@{/auth/logout}" method="post" style="display:inline;">
             <input type="hidden"
