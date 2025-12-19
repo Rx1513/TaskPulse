@@ -12,20 +12,20 @@
 
 
 ## Структура проекта
-
+```
 src/
 └─ main/
 ├─ java/web/
 │ └─ ContentController.java
 └─ resources/
-├─ templates/
-│ ├─ tasks.html
-│ ├─ show_task.html
-│ ├─ new_task.html
-│ ├─ login.html
-│ └─ register.html
-└─ application.properties
-
+   ├─ templates/
+   │ ├─ tasks.html
+   │ ├─ show_task.html
+   │ ├─ new_task.html
+   │ ├─ login.html
+   │ └─ register.html
+   └─ application.properties
+```
 
 ## Пример использования
 
