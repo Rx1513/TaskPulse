@@ -101,13 +101,14 @@ public class EmailService {
         sendEmailNotification(task.getSubscriptionList(), subject, body);
     }
 
-    public void sendEditedTaskNotification(Task task) {
+    public void sendEditedTaskNotification(Task task, User editor) {
         String subject = "[" + task.getProject() + "] Задача была изменена: " + task.getTitle();
         Map<String, Object> vars = Map.of(
                 "project", task.getProject(),
                 "task_title", task.getTitle(),
                 "author_name", task.getCreator().getName(),
                 "assignee_name", task.getAssignee().getName(),
+                "editor_name", editor.getName(),
                 "status", task.getStatus().getDisplayName(),
                 "due_date", task.getStart() + "-" + task.getEnd(),
                 "task_description", task.getDescription(),
