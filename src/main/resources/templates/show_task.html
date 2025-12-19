@@ -42,16 +42,16 @@
                 <button class="btn danger">Удалить задачу</button>
             </form>
 
-            <!-- ===== КОММЕНТАРИИ ===== -->
             <h3>Комментарии</h3>
             <div th:if="${#lists.isEmpty(task.comments)}">
                 <p>Комментариев пока нет</p>
             </div>
-            <div th:each="comment : ${task.comments}" class="task-card">
-                <p>
-                <strong th:text="${comment.commentator.name}">Автор</strong>:
-                <span th:text="${comment.content}">Комментарий</span>
-                </p>
+            <div th:each="comment : ${task.comments}" class="task-card comment-card">
+                <div class="comment-header">
+                    <strong th:text="${comment.commentator.name}">Автор</strong>
+                    <span class="comment-time" th:text="${#dates.format(comment.createdAt, 'dd.MM.yyyy HH:mm')}">Время</span>
+                </div>
+                <p th:text="${comment.content}">Комментарий</p>
             </div>
 
             <form th:action="@{/task/{id}/comment(id=${task.id})}" method="post">

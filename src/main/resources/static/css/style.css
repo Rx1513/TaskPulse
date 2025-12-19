@@ -157,6 +157,26 @@ textarea {
     resize: vertical;
 }
 
+.comment-card {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    position: relative;
+    background-color: #f9f9f9;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between; /* имя слева, время справа */
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.comment-time {
+    font-size: 0.8em;
+    color: #666;
+}
 
 
 
