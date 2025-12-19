@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: taskpulse
+      POSTGRES_USER: taskpulse
+      POSTGRES_PASSWORD: taskpulse
+    volumes:
+      - taskpulse-db:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/taskpulse
+      DB_USERNAME: taskpulse
+      DB_PASSWORD: taskpulse
+
+volumes:
+  taskpulse-db:

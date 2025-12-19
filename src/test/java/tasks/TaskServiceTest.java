@@ -17,13 +17,15 @@ class TaskServiceTest {
 
     private TaskService taskService;
     private InMemoryTaskRepository repo;
+    private StubEmailService emailService;
     private User creator;
     private User assignee;
 
     @BeforeEach
     void setup() {
         repo = new InMemoryTaskRepository();
-        taskService = new TaskService(repo);
+        emailService = new StubEmailService();
+        taskService = new TaskService(repo, emailService);
         creator = User.builder().id(1L).name("creator").email("c@mail").passwordHash("p").build();
         assignee = User.builder().id(2L).name("assignee").email("a@mail").passwordHash("p").build();
     }
@@ -44,12 +46,14 @@ class TaskServiceTest {
         Task saved = repo.savedTasks.get(0);
         Set<User> subs = saved.getSubscriptionList();
         assertThat(subs).extracting(User::getId).containsExactlyInAnyOrder(1L, 2L);
+        assertThat(emailService.newTaskSent).isEqualTo(1);
     }
 
     @Test
     void deleteTaskDoesNothingWhenMissing() {
-        taskService.deleteTaskById(10L);
+        taskService.deleteTaskById(10L, creator);
         assertThat(repo.deleted).isEqualTo(0);
+        assertThat(emailService.deletedTaskSent).isEqualTo(0);
     }
 
     @Test
@@ -57,7 +61,15 @@ class TaskServiceTest {
         assertThatThrownBy(
                         () ->
                                 taskService.changeTaskById(
-                                        5L, "p", "t", "d", assignee, LocalDate.now(), LocalDate.now(), Status.DONE))
+                                        5L,
+                                        "p",
+                                        "t",
+                                        "d",
+                                        assignee,
+                                        LocalDate.now(),
+                                        LocalDate.now(),
+                                        Status.DONE,
+                                        creator))
                 .isInstanceOf(org.springframework.dao.EmptyResultDataAccessException.class);
     }
 
@@ -112,6 +124,25 @@ class TaskServiceTest {
         @Override
         public List<tasks.Comment> getCommentsForTask(Task task) {
             return List.of();
+        }
+    }
+
+    private static class StubEmailService extends email.EmailService {
+        int newTaskSent = 0;
+        int deletedTaskSent = 0;
+
+        StubEmailService() {
+            super(null, null);
+        }
+
+        @Override
+        public void sendNewTaskNotification(Task task) {
+            newTaskSent++;
+        }
+
+        @Override
+        public void sendDeletedTaskNotification(Task task, User editor) {
+            deletedTaskSent++;
         }
     }
 }
