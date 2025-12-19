@@ -18,6 +18,7 @@ import tasks.Status;
 import tasks.Task;
 import tasks.TaskPreview;
 import users.User;
+import tasks.TaskEventProducer;
 
 @Repository
 @Transactional
@@ -25,14 +26,17 @@ public class TaskRepositoryImpl implements TaskRepository {
     private final TaskJpaRepository taskJpaRepository;
     private final CommentJpaRepository commentJpaRepository;
     private final UserJpaRepository userJpaRepository;
+    private final TaskEventProducer taskEventProducer;
 
     public TaskRepositoryImpl(
             TaskJpaRepository taskJpaRepository,
             CommentJpaRepository commentJpaRepository,
-            UserJpaRepository userJpaRepository) {
+            UserJpaRepository userJpaRepository,
+            TaskEventProducer taskEventProducer) {
         this.taskJpaRepository = taskJpaRepository;
         this.commentJpaRepository = commentJpaRepository;
         this.userJpaRepository = userJpaRepository;
+        this.taskEventProducer = taskEventProducer;
     }
 
     @Override
@@ -49,7 +53,11 @@ public class TaskRepositoryImpl implements TaskRepository {
         if (task.getStatus() == null) {
             task.setStatus(Status.NEW);
         }
-        taskJpaRepository.save(task);
+
+        Task saved = taskJpaRepository.save(task);
+
+        // 🔥 Вызов Kafka после сохранения задачи
+        taskEventProducer.sendCreated(saved.getId());
     }
 
     @Override
