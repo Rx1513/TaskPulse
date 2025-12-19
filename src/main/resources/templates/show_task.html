@@ -54,11 +54,13 @@
                 <p th:text="${comment.content}">Комментарий</p>
             </div>
 
-            <form th:action="@{/task/{id}/comment(id=${task.id})}" method="post">
-                <textarea name="text" rows="3" required placeholder="Написать комментарий..."></textarea>
-                <br>
-                <button class="btn primary">Отправить</button>
-            </form>
+            <div class="comment-card comment-form-card">
+                <form th:action="@{/task/{id}/comment(id=${task.id})}" method="post">
+                    <textarea name="text" rows="3" required placeholder="Написать комментарий..."></textarea>
+                    <button type="submit" class="btn primary">Отправить</button>
+                </form>
+            </div>
+
 
             <hr>
 
